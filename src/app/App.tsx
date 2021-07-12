@@ -9,27 +9,33 @@ import { authenticationService } from '../services/authenticationService';
 
 export const history = createBrowserHistory();
 
-const initialState = {
-    isLoggedIn: false,
-    currentUser: null
-};
-
-/*
-** App component -> container forw other parts.
-** Strores logic for state and neccessary information about logged in user.
-*/
 const App = () => {
-    const [isLoggedIn, setLoggedIn] = useState(initialState.isLoggedIn);
-    const [currentUser, setCurrentUser] = useState(initialState.currentUser);
+    const [currentUser, setCurrentUser] = useState(null);
+
+    const checkAuthUser = () => {
+        let userExpired = false;
+        const authUser = authenticationService.currentUserValue;
+        if (authUser && Object.keys(authUser).length !== 0) {
+            if (new Date().getTime() > authUser.expiry) {
+                userExpired = true;
+            }
+        }
+        return userExpired;
+    }
 
     useEffect(() => {
+        console.log('use effect app called');
+
+        console.log(authenticationService.currentUserValue);
+        console.log(authenticationService.currentUserValue.expiry);
+
+        if (checkAuthUser()) {
+            console.log('expires ... ');
+            localStorage.removeItem('currentUser');
+        }
+
         authenticationService.currentUser.subscribe(x => setCurrentUser(x));
     });
-
-    const logout = () => {
-        authenticationService.logout()
-        history.push('/login');
-    };
 
     return (
         <Router history={history}>
@@ -38,6 +44,5 @@ const App = () => {
         </Router>
     )
 };
-
 
 export { App };

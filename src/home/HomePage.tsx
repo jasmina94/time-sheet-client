@@ -1,7 +1,16 @@
-import React from 'react';
+import { useState } from 'react';
 import '../assets/css/Styles.css'
+import { authenticationService } from '../services/authenticationService';
 
 const HomePage = () => {
+
+  const [user, setUser] = useState(authenticationService.currentUserValue);
+
+  const logout = (e: any) => {
+    e.preventDefault();
+    authenticationService.logout();
+  }
+
   return (
     <div className="container">
       <header>
@@ -12,7 +21,7 @@ const HomePage = () => {
           </a>
           <ul className="user right">
             <li>
-              <a href=" ">Sladjana Miljanovic</a>
+              <a href=" ">{user.firstname} {user.lastname}</a>
               <div className="invisible"></div>
               <div className="user-menu">
                 <ul>
@@ -29,7 +38,7 @@ const HomePage = () => {
               </div>
             </li>
             <li className="last">
-              <a href=" ">Logout</a>
+              <a href="" onClick={logout}>Logout</a>
             </li>
           </ul>
           <nav>

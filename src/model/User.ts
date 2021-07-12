@@ -5,3 +5,11 @@ export interface User {
     firstname: string,
     lastname: string
 }
+
+export interface UserSessionInfo {
+    username: string,
+    firstname: string,
+    lastname: string,
+    token: string,
+    expiry: number
+}
