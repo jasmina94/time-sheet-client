@@ -12,12 +12,8 @@ export function handleResponse(response: any) {
                 if (UNAUTH.indexOf(status) !== -1) {
                     authenticationService.logout();
                 }
-
+                
                 const error = (data && data.error) || response.statusText;
-
-                console.log('handleeee....');
-                console.log(error);
-
                 return Promise.reject(error);
             }
 

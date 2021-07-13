@@ -25,7 +25,6 @@ const App = () => {
 
     useEffect(() => {
         if (checkUserExpiration()) {
-            console.log('Session expires ... ');
             localStorage.removeItem('currentUser');
         }
 

@@ -7,8 +7,10 @@ import { authenticationService } from '../services/authenticationService';
 
 const LoginPage = () => {
 	let history = useHistory();
+
 	const emailInput = useRef<HTMLInputElement>(null);
 	const passwordInput = useRef<HTMLInputElement>(null);
+
 	const [rememberMe, setRememberMe] = useState(false);
 	const [errorText, setError] = useState('');
 
@@ -19,9 +21,9 @@ const LoginPage = () => {
 	const login = () => {
 		const _email = emailInput.current?.value;
 		const _password = passwordInput.current?.value;
-		
-		if (_email !== undefined  && _email !== '' 
-				&& _password !== undefined && _password !== '') {
+
+		if (_email !== undefined && _email !== ''
+			&& _password !== undefined && _password !== '') {
 
 			authenticationService.login(_email, _password, rememberMe)
 				.then(data => {
@@ -36,9 +38,7 @@ const LoginPage = () => {
 		}
 	}
 
-	const handleErrorText = () => {
-		setError('');
-	}
+	const handleErrorText = () => { setError(''); }
 
 	return (
 		<div className="wrapper centered">
@@ -57,7 +57,7 @@ const LoginPage = () => {
 							<label className="error-label">{errorText}</label>
 						</li>
 						<li className="last">
-							<input type="checkbox" className="in-checkbox" id="remember" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)}/>
+							<input type="checkbox" className="in-checkbox" id="remember" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
 							<label className="in-label">Remember me</label>
 							<span className="right">
 								<ActionLink content="Forgot password?" action={passwordChange}></ActionLink>
