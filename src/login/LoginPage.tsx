@@ -14,9 +14,7 @@ const LoginPage = () => {
 	const [rememberMe, setRememberMe] = useState(false);
 	const [errorText, setError] = useState('');
 
-	const passwordChange = () => {
-		alert('You requested password change!');
-	}
+	const passwordChange = () => { history.push('/forgotPassword'); }
 
 	const login = () => {
 		const _email = emailInput.current?.value;
@@ -42,7 +40,7 @@ const LoginPage = () => {
 
 	return (
 		<div className="wrapper centered">
-			<MainLogo altImg="Login" />
+			<MainLogo altImg="Login" clickHandler={() => history.push('/')}/>
 			<div className="centered-content-wrap">
 				<div className="centered-block">
 					<h1>Login</h1>
@@ -58,7 +56,7 @@ const LoginPage = () => {
 						</li>
 						<li className="last">
 							<input type="checkbox" className="in-checkbox" id="remember" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
-							<label className="in-label">Remember me</label>
+							<label className="in-label ml-1">Remember me</label>
 							<span className="right">
 								<ActionLink content="Forgot password?" action={passwordChange}></ActionLink>
 								<button className="btn blue" onClick={login}>Login</button>

@@ -1,6 +1,6 @@
 import { BehaviorSubject } from "rxjs";
 import { handleResponse } from "../api/ResponseHandler";
-import { Response, UserSessionInfo } from "../model/Model";
+import { ApiResponse, UserSessionInfo } from "../model/Model";
 const { REACT_APP_DEFAULT_EXPIRATION_TIME } = process.env;
 const { REACT_APP_EXTENDED_EXPIRATION_TIME } = process.env;
 const { REACT_APP_SERVER_PATH } = process.env;
@@ -22,7 +22,7 @@ export const authenticationService = {
 };
 
 function login(email: string, password: string, rememberMe: boolean) {
-    let ret: Response;
+    let ret: ApiResponse;
     const expirationTime = rememberMe ? EXTENDED_SESSION_EXPIRATION : DEFAULT_SESSION_EXPIRATION;
 
     const request = {

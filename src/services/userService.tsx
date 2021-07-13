@@ -3,19 +3,36 @@ import { handleResponse } from "../api/ResponseHandler";
 const { REACT_APP_SERVER_PATH } = process.env;
 const { REACT_APP_SERVER_PORT } = process.env;
 const { REACT_APP_GET_USERS_PATH } = process.env;
+const { REACT_APP_RESET_PASSWORD } = process.env;
 
-const GET_ALL_USERS_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT + REACT_APP_GET_USERS_PATH;
+const SERVER_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT;
+const GET_ALL_USERS_PATH = SERVER_PATH + '' + REACT_APP_GET_USERS_PATH;
+const RESET_PASSWORD_PATH = SERVER_PATH + '' + REACT_APP_RESET_PASSWORD;
 
 export const userService = {
     getAll,
-    getById
+    resetPassword
 };
 
 function getAll()  {
     const requestOptions: any = { method: 'GET', headers: getAuthHeader()};
-    return fetch(GET_ALL_USERS_PATH, requestOptions).then(handleResponse)
+    return fetch(GET_ALL_USERS_PATH, requestOptions).then(handleResponse);
 }
 
-function getById() {
+function resetPassword(email: string) {
+    const request = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email }),
+    };
 
+    return fetch(RESET_PASSWORD_PATH, request)
+        .then(handleResponse)
+        .then(response => {
+            return { success: true, error: '', data: response.password }
+        })
+        .catch(error => {
+            console.log(error);
+            return { success: false, error: error,  data: {}}
+        });
 }

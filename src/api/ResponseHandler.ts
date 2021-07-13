@@ -3,6 +3,7 @@ import { authenticationService } from "../services/authenticationService";
 const UNAUTH = [401, 403];
 
 export function handleResponse(response: any) {
+    console.log('heej');
     return response.text()
         .then((text: any) => {
             const data = text && JSON.parse(text);
