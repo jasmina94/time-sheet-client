@@ -26,7 +26,7 @@ const LoginPage = () => {
 			authenticationService.login(_email, _password, rememberMe)
 				.then(data => {
 					if (!data.success) {
-						setError('User does not exist!');
+						setError(data.error);
 					} else {
 						history.push('/');
 					}

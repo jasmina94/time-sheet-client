@@ -12,25 +12,20 @@ export const history = createBrowserHistory();
 const App = () => {
     const [currentUser, setCurrentUser] = useState(null);
 
-    const checkAuthUser = () => {
-        let userExpired = false;
+    const checkUserExpiration = () => {
+        let userExpired = true;
         const authUser = authenticationService.currentUserValue;
         if (authUser && Object.keys(authUser).length !== 0) {
-            if (new Date().getTime() > authUser.expiry) {
-                userExpired = true;
+            if (new Date().getTime() <= authUser.expiry) {
+                userExpired = false;
             }
         }
         return userExpired;
     }
 
     useEffect(() => {
-        console.log('use effect app called');
-
-        console.log(authenticationService.currentUserValue);
-        console.log(authenticationService.currentUserValue.expiry);
-
-        if (checkAuthUser()) {
-            console.log('expires ... ');
+        if (checkUserExpiration()) {
+            console.log('Session expires ... ');
             localStorage.removeItem('currentUser');
         }
 

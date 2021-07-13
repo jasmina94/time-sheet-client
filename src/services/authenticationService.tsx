@@ -2,7 +2,7 @@ import { BehaviorSubject } from "rxjs";
 import { ApiConfig } from "../api/ApiConfig";
 import { handleResponse } from "../api/ResponseHandler";
 import { DEFAULT_EXPIRATION_TIME, EXTENDED_EXPIRATION_TIME } from "../helpers/authHeader";
-import { UserSessionInfo } from "../model/User";
+import { Response, UserSessionInfo } from "../model/Model";
 
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser') || '{}'));
 
@@ -14,6 +14,8 @@ export const authenticationService = {
 };
 
 function login(email: string, password: string, rememberMe: boolean) {
+    let ret: Response;
+    const expirationTime = rememberMe ? EXTENDED_EXPIRATION_TIME : DEFAULT_EXPIRATION_TIME;
     const request = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -23,7 +25,6 @@ function login(email: string, password: string, rememberMe: boolean) {
     return fetch(ApiConfig.autenticate, request)
         .then(handleResponse)
         .then(response => {
-            const expirationTime = rememberMe ? DEFAULT_EXPIRATION_TIME : EXTENDED_EXPIRATION_TIME;
             let userInfo: UserSessionInfo = {
                 username: response.user.email,
                 firstname: response.user.firstname,
@@ -35,9 +36,14 @@ function login(email: string, password: string, rememberMe: boolean) {
             localStorage.setItem('currentUser', JSON.stringify(userInfo));
             currentUserSubject.next(userInfo);
 
-            return { success: true, data: userInfo };
+            ret = { success: true, data: userInfo, error: ''};
+
+            return ret;
         })
-        .catch(() => { return { success: false, data: {} } });
+        .catch(error => { 
+            ret = { success: false, data: {}, error}
+            return ret;
+        });
 }
 
 

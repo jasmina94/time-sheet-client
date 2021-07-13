@@ -1,3 +1,9 @@
+export interface Response {
+    success: boolean,
+    error: string,
+    data: any
+}
+
 export interface User {
     id: number,
     email: string,
