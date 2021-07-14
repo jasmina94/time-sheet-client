@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import '../assets/css/Styles.css'
 import { authenticationService } from '../services/authenticationService';
-import { userService } from '../services/userService';
 
-const HomePage = () => {
-  const [userInfo, setUserInfo] = useState(userService.currentUserValue);
-
+const HomePage = (props: any) => {
   const logout = (e: any) => {
     e.preventDefault();
     authenticationService.logout();
@@ -16,6 +12,8 @@ const HomePage = () => {
     console.log('profile');
   }
 
+  console.log(props);
+  
   return (
     <div className="container">
       <header>
@@ -26,7 +24,7 @@ const HomePage = () => {
           </a>
           <ul className="user right">
             <li>
-              <a href=" " onClick={handleProfileLink}>{userInfo.firstname} {userInfo.lastname}</a>
+              <a href=" " onClick={handleProfileLink}>{props.userInfo.firstname} {props.userInfo.lastname}</a>
               <div className="invisible"></div>
               <div className="user-menu">
                 <ul>

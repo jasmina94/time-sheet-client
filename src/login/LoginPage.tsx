@@ -1,10 +1,9 @@
 import '../assets/css/Styles.css';
+import MainLogo from '../components/MainLogo';
 import ActionLink from '../components/ActionLink';
 import { useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import MainLogo from '../components/MainLogo';
 import { authenticationService } from '../services/authenticationService';
-import { userService } from '../services/userService';
 
 const LoginPage = () => {
 	let history = useHistory();
@@ -29,14 +28,7 @@ const LoginPage = () => {
 					if (!response.success) {
 						setError(response.error);
 					} else {
-						userService.me()
-							.then(response => {
-								if (response.success) {
-									history.push('/');
-								} else {
-									setError(response.error);
-								}
-							})						
+						history.push('/');					
 					}
 				})
 		} else {

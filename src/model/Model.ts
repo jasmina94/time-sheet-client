@@ -3,7 +3,6 @@ export interface ApiResponse {
     error: string,
     data: any
 }
-
 export interface User {
     id: number,
     email: string,

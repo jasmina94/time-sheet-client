@@ -7,7 +7,7 @@ const { REACT_APP_LOGIN_PATH } = process.env;
 
 const LOGIN_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT + REACT_APP_LOGIN_PATH;
 
-const tokenSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('token') || '{}'));
+const tokenSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('token') || 'null'));
 
 export const authenticationService = {
     login,
@@ -28,7 +28,7 @@ function login(email: string, password: string, remember: boolean) {
     return fetch(LOGIN_PATH, request)
         .then(handleResponse)
         .then(response => {
-            let token = response.token;
+            let token = response.token;            
             localStorage.setItem('token', JSON.stringify(token));
             tokenSubject.next(token);
 
