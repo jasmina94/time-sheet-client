@@ -13,9 +13,7 @@ export interface User {
 }
 
 export interface UserSessionInfo {
-    username: string,
+    email: string,
     firstname: string,
-    lastname: string,
-    token: string,
-    expiry: number
+    lastname: string
 }

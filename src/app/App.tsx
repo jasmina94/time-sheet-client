@@ -12,26 +12,11 @@ import ForgotPasswordPage from '../forgotPassword/ForgotPasswordPage';
 export const history = createBrowserHistory();
 
 const App = () => {
-    const [currentUser, setCurrentUser] = useState(null);
-
-    const checkUserExpiration = () => {
-        let userExpired = true;
-        const authUser = authenticationService.currentUserValue;
-        if (authUser && Object.keys(authUser).length !== 0) {
-            if (new Date().getTime() <= authUser.expiry) {
-                userExpired = false;
-            }
-        }
-        return userExpired;
-    }
+    const [token, setToken] = useState(authenticationService.tokenValue);
 
     useEffect(() => {
-        if (checkUserExpiration()) {
-            localStorage.removeItem('currentUser');
-        }
-
-        authenticationService.currentUser.subscribe(x => setCurrentUser(x));
-    });
+        authenticationService.token.subscribe(x => setToken(x));
+    }, [token]);
 
     return (
         <Router history={history}>

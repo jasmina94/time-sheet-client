@@ -1,51 +1,38 @@
 import { BehaviorSubject } from "rxjs";
 import { handleResponse } from "../api/ResponseHandler";
-import { ApiResponse, UserSessionInfo } from "../model/Model";
-const { REACT_APP_DEFAULT_EXPIRATION_TIME } = process.env;
-const { REACT_APP_EXTENDED_EXPIRATION_TIME } = process.env;
+import { ApiResponse } from "../model/Model";
 const { REACT_APP_SERVER_PATH } = process.env;
 const { REACT_APP_SERVER_PORT } = process.env;
 const { REACT_APP_LOGIN_PATH } = process.env;
 
-const DEFAULT_SESSION_EXPIRATION = REACT_APP_DEFAULT_EXPIRATION_TIME ? parseInt(REACT_APP_DEFAULT_EXPIRATION_TIME) : 1234;
-const EXTENDED_SESSION_EXPIRATION = REACT_APP_EXTENDED_EXPIRATION_TIME ? parseInt(REACT_APP_EXTENDED_EXPIRATION_TIME) : 12345;
-
 const LOGIN_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT + REACT_APP_LOGIN_PATH;
 
-const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser') || '{}'));
+const tokenSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('token') || '{}'));
 
 export const authenticationService = {
     login,
     logout,
-    currentUser: currentUserSubject.asObservable(),
-    get currentUserValue(): UserSessionInfo { return currentUserSubject.value },
+    token: tokenSubject.asObservable(),
+    get tokenValue(): string { return tokenSubject.value },
 };
 
-function login(email: string, password: string, rememberMe: boolean) {
+function login(email: string, password: string, remember: boolean) {
     let ret: ApiResponse;
-    const expirationTime = rememberMe ? EXTENDED_SESSION_EXPIRATION : DEFAULT_SESSION_EXPIRATION;
 
     const request = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember }),
     };
 
     return fetch(LOGIN_PATH, request)
         .then(handleResponse)
         .then(response => {
-            let userInfo: UserSessionInfo = {
-                username: response.user.email,
-                firstname: response.user.firstname,
-                lastname: response.user.lastname,
-                token: response.token,
-                expiry: new Date().getTime() + expirationTime
-            };
+            let token = response.token;
+            localStorage.setItem('token', JSON.stringify(token));
+            tokenSubject.next(token);
 
-            localStorage.setItem('currentUser', JSON.stringify(userInfo));
-            currentUserSubject.next(userInfo);
-
-            ret = { success: true, data: userInfo, error: '' };
+            ret = { success: true, data: token, error: '' };
 
             return ret;
         })
@@ -57,6 +44,6 @@ function login(email: string, password: string, rememberMe: boolean) {
 
 
 function logout() {
-    currentUserSubject.next(null);
+    tokenSubject.next(null);
     localStorage.clear();
 }

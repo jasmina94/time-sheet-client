@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import MainLogo from '../components/MainLogo';
 import { authenticationService } from '../services/authenticationService';
+import { userService } from '../services/userService';
 
 const LoginPage = () => {
 	let history = useHistory();
@@ -24,11 +25,18 @@ const LoginPage = () => {
 			&& _password !== undefined && _password !== '') {
 
 			authenticationService.login(_email, _password, rememberMe)
-				.then(data => {
-					if (!data.success) {
-						setError(data.error);
+				.then(response => {
+					if (!response.success) {
+						setError(response.error);
 					} else {
-						history.push('/');
+						userService.me()
+							.then(response => {
+								if (response.success) {
+									history.push('/');
+								} else {
+									setError(response.error);
+								}
+							})						
 					}
 				})
 		} else {
@@ -40,7 +48,7 @@ const LoginPage = () => {
 
 	return (
 		<div className="wrapper centered">
-			<MainLogo altImg="Login" clickHandler={() => history.push('/')}/>
+			<MainLogo altImg="Login" clickHandler={() => history.push('/')} />
 			<div className="centered-content-wrap">
 				<div className="centered-block">
 					<h1>Login</h1>

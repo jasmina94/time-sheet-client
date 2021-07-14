@@ -3,8 +3,8 @@ import { authenticationService } from "../services/authenticationService";
 
 export const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => {
-        const currentUser = authenticationService.currentUserValue;
-        if (!currentUser || Object.keys(currentUser).length === 0) {
+        const jwtToken = authenticationService.tokenValue;
+        if (!jwtToken || Object.keys(jwtToken).length === 0) {
             return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
         }
 
