@@ -2648,7 +2648,6 @@ header .user li .user-menu {
   -o-border-radius: 5px;
   border-radius: 5px;
   border: 1px solid silver;
-  display: none;
 }
 header .user li .user-menu ul li {
   display: block;

@@ -15,7 +15,6 @@ const ForgotPasswordPage = () => {
 		const _email = emailInput.current?.value;
 
 		if (_email && _email !== '') {
-			console.log(_email)
 			userService.resetPassword(_email)
 				.then(response => {
 					if (!response.success) {

@@ -1,19 +1,18 @@
 import { createBrowserHistory } from 'history';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { Route, Router } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router-dom';
 import { PrivateRoute } from '../components/PrivateRoute';
 import { authenticationService } from '../services/authenticationService';
-
+import jwtDecode from 'jwt-decode';
 import HomePage from '../home/HomePage';
 import LoginPage from '../login/LoginPage';
 import ForgotPasswordPage from '../forgotPassword/ForgotPasswordPage';
-import jwtDecode from 'jwt-decode';
 import { UserSessionInfo } from '../model/Model';
 
 export const history = createBrowserHistory();
 
-const userInfoInit: UserSessionInfo = {
+const initState: UserSessionInfo = {
     email: '',
     firstname: '',
     lastname: ''
@@ -21,7 +20,7 @@ const userInfoInit: UserSessionInfo = {
 
 const App = () => {
     const [token, setToken] = useState(authenticationService.tokenValue);
-    const [userInfo, setUserInfo] = useState(userInfoInit);
+    const [userInfo, setUserInfo] = useState(initState);
 
     const checkUserExpiration = () => {
         let userExpired = false;
@@ -54,9 +53,11 @@ const App = () => {
 
     return (
         <Router history={history}>
-            <PrivateRoute exact path="/" component={() => <HomePage userInfo={userInfo} />} />
-            <Route path="/login" component={LoginPage} />
-            <Route path="/forgotPassword" component={ForgotPasswordPage} />
+            <Switch>
+                <PrivateRoute exact path="/" component={() => <HomePage userInfo={userInfo} />} />
+                <Route path="/login" component={LoginPage} />
+                <Route path="/forgotPassword" component={ForgotPasswordPage} />
+            </Switch>
         </Router>
     )
 };

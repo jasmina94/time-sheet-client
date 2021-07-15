@@ -1,7 +1,18 @@
 import '../assets/css/Styles.css'
 import { authenticationService } from '../services/authenticationService';
+import { useState } from 'react';
+import UserMenu from '../components/UserMenu';
+import { useHistory } from 'react-router-dom';
+
 
 const HomePage = (props: any) => {
+  const tabClass = 'btn nav';
+  const activeTabClass = 'btn nav active';
+
+  const history = useHistory();
+  const [openProfile, setOpenProfile] = useState(false);
+  const [activeTab, setActiveTab] = useState('timesheet');
+
   const logout = (e: any) => {
     e.preventDefault();
     authenticationService.logout();
@@ -9,11 +20,24 @@ const HomePage = (props: any) => {
 
   const handleProfileLink = (e: any) => {
     e.preventDefault();
-    console.log('profile');
+    setOpenProfile(!openProfile);
   }
 
-  console.log(props);
-  
+  const handleTabClick = (e: any) => {
+    e.preventDefault();
+    const id = e.target.id;
+    setActiveTab(id);
+  }
+
+  const getTabClassNameFor = (tabName: string): string => {
+    let className: string = 'btn nav';
+    if (activeTab === tabName) {
+      className += ' active';
+    }
+
+    return className;
+  }
+
   return (
     <div className="container">
       <header>
@@ -26,19 +50,7 @@ const HomePage = (props: any) => {
             <li>
               <a href=" " onClick={handleProfileLink}>{props.userInfo.firstname} {props.userInfo.lastname}</a>
               <div className="invisible"></div>
-              <div className="user-menu">
-                <ul>
-                  <li>
-                    <a href=" " className="link">Change password</a>
-                  </li>
-                  <li>
-                    <a href=" " className="link">Settings</a>
-                  </li>
-                  <li>
-                    <a href=" " className="link">Export all data</a>
-                  </li>
-                </ul>
-              </div>
+              {openProfile && (<UserMenu />)}
             </li>
             <li className="last">
               <a href="" onClick={logout}>Logout</a>
@@ -47,22 +59,22 @@ const HomePage = (props: any) => {
           <nav>
             <ul className="menu">
               <li>
-                <a href="index.html" className="btn nav active">TimeSheet</a>
+                <a href=" " id='timesheet' className={getTabClassNameFor('timesheet')} onClick={handleTabClick}>TimeSheet</a>
               </li>
               <li>
-                <a href="clients.html" className="btn nav">Clients</a>
+                <a href=" " id='clients' className={getTabClassNameFor('clients')} onClick={handleTabClick}>Clients</a>
               </li>
               <li>
-                <a href="projects.html" className="btn nav">Projects</a>
+                <a href=" " id='projects' className={getTabClassNameFor('projects')} onClick={handleTabClick}>Projects</a>
               </li>
               <li>
-                <a href="categories.html" className="btn nav">Categories</a>
+                <a href=" " id='categories' className={getTabClassNameFor('categories')} onClick={handleTabClick}>Categories</a>
               </li>
               <li>
-                <a href="team-members.html" className="btn nav">Team members</a>
+                <a href=" " id='team-memebers' className={getTabClassNameFor('team-memebers')} onClick={handleTabClick}>Team members</a>
               </li>
               <li className="last">
-                <a href="reports.html" className="btn nav">Reports</a>
+                <a href=" " id='reports' className={getTabClassNameFor('reports')} onClick={handleTabClick}>Reports</a>
               </li>
             </ul>
             <div className="mobile-menu">
