@@ -10,9 +10,7 @@ export const MobileMenu = (props: any) => {
         e.preventDefault();
         setOpenMenu(!openMenu);
     }
-
-    console.log(openMenu);
-
+    
     return (
         <div className="mobile-menu">
             <a href=" " className="menu-btn" onClick={handleMenu}>

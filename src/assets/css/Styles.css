@@ -3242,7 +3242,7 @@ footer ul li.last {
 /*----------  members page
 ------------------------------------------------------------------------------*/
 .new-member-wrap {
-  display: none;
+  margin-bottom: 20px;
 }
 
 .new-member-inner {

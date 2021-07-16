@@ -17,10 +17,17 @@ export interface UserSessionInfo {
     lastname: string
 }
 
-
 export interface MenuItem {
     id: string,
     name: string,
     href: string,
     displayName: string
+}
+
+export interface Client {
+    name: string,
+    address: string,
+    city: string,
+    zip: string,
+    country: string
 }
