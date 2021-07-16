@@ -16,3 +16,11 @@ export interface UserSessionInfo {
     firstname: string,
     lastname: string
 }
+
+
+export interface MenuItem {
+    id: string,
+    name: string,
+    href: string,
+    displayName: string
+}

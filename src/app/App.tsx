@@ -38,8 +38,6 @@ const App = () => {
     }
 
     useEffect(() => {
-        console.log(token);
-        console.log('App: use effect');
         if (checkUserExpiration()) {
             authenticationService.logout();
         } else {
