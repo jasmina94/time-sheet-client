@@ -71,14 +71,14 @@ const LoginPage = () => {
 							<input type="text" placeholder="Email" name="email"
 								className="in-text large" value={email} onChange={handleFormInputChange} />
 						</li>
-						<li style={{paddingTop: "-12px"}}>
+						<li>
 							<label className="error-label">{errorEmail}</label>
 						</li>
 						<li>
 							<input type="password" placeholder="Password" name="password"
 								className="in-pass large" value={password} onChange={handleFormInputChange} />
 						</li>
-						<li style={{paddingTop: "-12px"}}>
+						<li>
 							<label className="error-label">{errorPassword}</label>
 						</li>
 						<li className="last">
