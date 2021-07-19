@@ -14,7 +14,7 @@ export const AlphabetPanel = (props: any) => {
         }
 
         elements.push(
-            <li className={attr}>
+            <li className={attr} key={item}>
                 <a href=" ">{item}</a>
             </li>
         );

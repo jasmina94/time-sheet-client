@@ -1,22 +1,36 @@
 import { useState } from 'react';
 import '../../assets/css/Styles.css';
 import { NewItemForm } from '../forms/NewItemForm';
+import { Pagination } from '../Pagination';
+import { ClientDetailsList } from '../ClientDetailsList';
+import { LoadingComponent } from '../LoadingComponent';
 import { AlphabetPanel } from '../AlphabetPanel';
 import { useEffect } from 'react';
+import { clientService } from '../../services/clientService';
 
 export const ClientsTabContent = () => {
-	const [newItem, setNewItem] = useState(false);
-	const [clients, setClients] = useState([]);
+	const [data, setData] = useState(clientService.clientsValue);
+	const [dataLoaded, setDataLoaded] = useState(false);
+	const [toggleNewItem, setToggleNewItem] = useState(false);
 
 	const handleNewMember = (e: any) => {
 		e.preventDefault();
-		setNewItem(!newItem);
+		setToggleNewItem(!toggleNewItem);
 	}
 
 	useEffect(() => {
-		console.log('Call when clients change ... ');
-	}, [clients]);
+		clientService.getAll()
+			.then(response => {
+				if (response.success) {
+					setDataLoaded(true);
+					setData(response.data);
+				} else {
+					setDataLoaded(false);
+				}
+			})
 
+		clientService.clients.subscribe(x => setData(x));
+	}, []);
 
 	return (
 		<section className="content">
@@ -27,152 +41,11 @@ export const ClientsTabContent = () => {
 					<input type="search" name="search-clients" className="in-search" />
 				</div>
 			</div>
-			{newItem && (<NewItemForm formType='client'/>)}
-			<AlphabetPanel active='k' disabled='m'/>
-			<div className="accordion-wrap clients">
-				<div className="item">
-					<div className="heading">
-						<span>ADAM Software NV</span>
-						<i>+</i>
-					</div>
-					<div className="details">
-						<ul className="form">
-							<li>
-								<label>Client name:</label>
-								<input type="text" className="in-text" />
-							</li>
-							<li>
-								<label>Zip/Postal code:</label>
-								<input type="text" className="in-text" />
-							</li>
-						</ul>
-						<ul className="form">
-							<li>
-								<label>Address:</label>
-								<input type="text" className="in-text" />
-							</li>
-							<li>
-								<label>Country:</label>
-								<select>
-									<option>Select country</option>
-								</select>
-							</li>
-						</ul>
-						<ul className="form last">
-							<li>
-								<label>City:</label>
-								<input type="text" className="in-text" />
-							</li>
-						</ul>
-						<div className="buttons">
-							<div className="inner">
-								<a href=" " className="btn green">Save</a>
-								<a href=" " className="btn red">Delete</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className="item">
-					<div className="heading">
-						<span>Clockwork</span>
-						<i>+</i>
-					</div>
-					<div className="details">
-						<ul className="form">
-							<li>
-								<label>Client name:</label>
-								<input type="text" className="in-text" />
-							</li>
-							<li>
-								<label>Zip/Postal code:</label>
-								<input type="text" className="in-text" />
-							</li>
-						</ul>
-						<ul className="form">
-							<li>
-								<label>Address:</label>
-								<input type="text" className="in-text" />
-							</li>
-							<li>
-								<label>Country:</label>
-								<select>
-									<option>Select country</option>
-								</select>
-							</li>
-						</ul>
-						<ul className="form last">
-							<li>
-								<label>City:</label>
-								<input type="text" className="in-text" />
-							</li>
-						</ul>
-						<div className="buttons">
-							<div className="inner">
-								<a href=" " className="btn green">Save</a>
-								<a href=" " className="btn red">Delete</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className="item">
-					<div className="heading">
-						<span>Emperor Design</span>
-						<i>+</i>
-					</div>
-					<div className="details">
-						<ul className="form">
-							<li>
-								<label>Client name:</label>
-								<input type="text" className="in-text" />
-							</li>
-							<li>
-								<label>Zip/Postal code:</label>
-								<input type="text" className="in-text" />
-							</li>
-						</ul>
-						<ul className="form">
-							<li>
-								<label>Address:</label>
-								<input type="text" className="in-text" />
-							</li>
-							<li>
-								<label>Country:</label>
-								<select>
-									<option>Select country</option>
-								</select>
-							</li>
-						</ul>
-						<ul className="form last">
-							<li>
-								<label>City:</label>
-								<input type="text" className="in-text" />
-							</li>
-						</ul>
-						<div className="buttons">
-							<div className="inner">
-								<a href=" " className="btn green">Save</a>
-								<a href=" " className="btn red">Delete</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div className="pagination">
-				<ul>
-					<li>
-						<a href=" ">1</a>
-					</li>
-					<li>
-						<a href=" ">2</a>
-					</li>
-					<li>
-						<a href=" ">3</a>
-					</li>
-					<li className="last">
-						<a href=" ">Next</a>
-					</li>
-				</ul>
-			</div>
+			{toggleNewItem && (<NewItemForm formType='client' />)}
+			<AlphabetPanel active='k' disabled='m' />
+			{!dataLoaded && <LoadingComponent />}
+			{dataLoaded && <ClientDetailsList clients={data}/>}
+			<Pagination />
 		</section>
 	);
 }

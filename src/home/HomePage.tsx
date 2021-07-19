@@ -2,7 +2,7 @@ import '../assets/css/Styles.css'
 import { useState } from 'react';
 import Footer from '../components/Footer';
 import UserMenu from '../components/UserMenu';
-import { MenuItem } from '../model/Model';
+import { menuItems } from '../components/menu/constants';
 import {
   ClientsTabContent, TimeSheetTabContent,
   ReportsTabContent, ProjectsTabContent,
@@ -10,9 +10,11 @@ import {
 } from '../components/tabs';
 import { Menu, MobileMenu } from '../components/menu';
 import { authenticationService } from '../services/authenticationService';
+import { useHistory } from 'react-router';
 
 
 const HomePage = (props: any) => {
+  const history = useHistory();
   const [openProfile, setOpenProfile] = useState(false);
   const [activeTab, setActiveTab] = useState('timesheet');
 
@@ -51,51 +53,12 @@ const HomePage = (props: any) => {
     }
   }
 
-  const menuItems: MenuItem[] = [
-    {
-      id: 'timesheet',
-      name: 'timesheet',
-      href: ' ',
-      displayName: 'TimeSheet'
-    },
-    {
-      id: 'clients',
-      name: 'clients',
-      href: ' ',
-      displayName: 'Clients'
-    },
-    {
-      id: 'projects',
-      name: 'projects',
-      href: ' ',
-      displayName: 'Projects'
-    },
-    {
-      id: 'categories',
-      name: 'categories',
-      href: ' ',
-      displayName: 'Categories'
-    },
-    {
-      id: 'team-memebers',
-      name: 'team-memebers',
-      href: ' ',
-      displayName: 'Team memebers'
-    },
-    {
-      id: 'reports',
-      name: 'reports',
-      href: ' ',
-      displayName: 'Reports'
-    },
-  ];
-
   return (
     <div className="container">
       <header>
         <div className="top-bar"></div>
         <div className="wrapper">
-          <a href="index.html" className="logo">
+          <a href=" " className="logo" onClick={() => history.push('/')}>
             <img src="logo.png" alt="Emakina Timesheet" />
           </a>
           <ul className="user right">

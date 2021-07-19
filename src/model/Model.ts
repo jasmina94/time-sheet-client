@@ -25,6 +25,7 @@ export interface MenuItem {
 }
 
 export interface Client {
+    id: string,
     name: string,
     address: string,
     city: string,

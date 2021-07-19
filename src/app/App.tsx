@@ -47,7 +47,7 @@ const App = () => {
 
         authenticationService.token.subscribe(x => setToken(x));
 
-    }, [token]);
+    }, []);
 
     return (
         <Router history={history}>
