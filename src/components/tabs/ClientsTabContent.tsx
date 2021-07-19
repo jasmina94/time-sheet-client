@@ -41,10 +41,15 @@ export const ClientsTabContent = () => {
 					<input type="search" name="search-clients" className="in-search" />
 				</div>
 			</div>
+			
 			{toggleNewItem && (<NewItemForm formType='client' />)}
+
 			<AlphabetPanel active='k' disabled='m' />
+			
 			{!dataLoaded && <LoadingComponent />}
+			
 			{dataLoaded && <ClientDetailsList clients={data}/>}
+			
 			<Pagination />
 		</section>
 	);
