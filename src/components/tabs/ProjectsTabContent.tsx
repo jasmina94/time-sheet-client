@@ -2,7 +2,7 @@ import '../../assets/css/Styles.css';
 import '../../assets/css/Styles.css';
 import { useState } from 'react';
 import { NewItemForm } from '../forms/NewItemForm';
-import { AlphabetPanel } from '../AlphabetPanel';
+import { AlphabetPanel } from '../shared/AlphabetPanel';
 
 export const ProjectsTabContent = ()  => {
 	const [newItem, setNewItem] = useState(false);

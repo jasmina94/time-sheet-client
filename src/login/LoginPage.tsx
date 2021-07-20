@@ -1,6 +1,6 @@
 import '../assets/css/Styles.css';
-import MainLogo from '../components/MainLogo';
-import ActionLink from '../components/ActionLink';
+import MainLogo from '../components/shared/MainLogo';
+import ActionLink from '../components/shared/ActionLink';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authenticationService } from '../services/authenticationService';

@@ -1,15 +1,15 @@
 import '../../assets/css/Styles.css';
 
-import { ClientForm } from './ClientForm';
+import { ClientForm } from '../clients/ClientForm';
 import { ProjectForm } from './ProjectForm';
 
 export const NewItemForm = (props: any) => {
 	const renderFormContent = () => {
 		switch (props.formType) {
 			case 'client':
-				return <ClientForm />
+				return <ClientForm handleToUpdate={props.handleToUpdate}/>
 			case 'project':
-				return <ProjectForm />
+				return <ProjectForm handleToUpdate={props.handleToUpdate}/>
 		}
 	}
 	return (

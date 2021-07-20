@@ -2,7 +2,7 @@ import { createBrowserHistory } from 'history';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
-import { PrivateRoute } from '../components/PrivateRoute';
+import { PrivateRoute } from '../components/shared/PrivateRoute';
 import { authenticationService } from '../services/authenticationService';
 import jwtDecode from 'jwt-decode';
 import HomePage from '../home/HomePage';

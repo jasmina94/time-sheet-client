@@ -12,14 +12,15 @@ const CLIENTS_PATH = SERVER_PATH + '' + REACT_APP_CLIENTS_PATH;
 const clientsSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('clients') || 'null'));
 
 export const clientService = {
-    getAll,
-    updateClient,
-    deleteClient,
+    read,
+    create,
+    update,
+    remove,
     clients: clientsSubject.asObservable(),
     get clientsValue(): Client[] { return clientsSubject.value },
 };
 
-function getAll() {
+function read() {
     const requestOptions: any = { method: 'GET', headers: getAuthHeader() };
     return fetch(CLIENTS_PATH, requestOptions)
         .then(handleResponse)
@@ -33,29 +34,43 @@ function getAll() {
         .catch(error => {
             return { success: false, data: {}, error: error };
         })
+
 }
-function updateClient(client: Client) {
-    const requestOptions: any = { 
-        method: 'PUT', 
-        headers: {...getAuthHeader(), 'Content-Type': 'application/json'},  
-        body: JSON.stringify({name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country})
+
+function create(client: Client) {
+    const requestOptions: any = {
+        method: 'POST',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
     };
-    return fetch(CLIENTS_PATH + '/' + client.id, requestOptions)
+    return fetch(CLIENTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
-            let data = response.data;
-            localStorage.setItem('clients', JSON.stringify(data));
-            clientsSubject.next(data);
-
-            return { success: true, data: data, error: '' };
+            return { success: true, data: response.data, error: '' };
         })
         .catch(error => {
             return { success: false, data: {}, error: error };
         })
 }
 
-function deleteClient(id: number) {
-    let requestOptions: any = { method: 'DELETE', headers: getAuthHeader()};
+function update(client: Client) {
+    const requestOptions: any = {
+        method: 'PUT',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
+    };
+    return fetch(CLIENTS_PATH + '/' + client.id, requestOptions)
+        .then(handleResponse)
+        .then(response => {
+            return { success: true, data: response.data, error: '' };
+        })
+        .catch(error => {
+            return { success: false, data: {}, error: error };
+        })
+}
+
+function remove(id: number) {
+    let requestOptions: any = { method: 'DELETE', headers: getAuthHeader() };
     return fetch(CLIENTS_PATH + '/' + id, requestOptions)
         .then(handleResponse)
         .then(response => {

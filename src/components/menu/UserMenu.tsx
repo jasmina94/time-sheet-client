@@ -1,5 +1,5 @@
-import '../assets/css/Styles.css';
-import '../assets/css/CustomStyles.css';
+import '../../assets/css/Styles.css';
+import '../../assets/css/CustomStyles.css';
 
 const UserMenu = () => {
     return (

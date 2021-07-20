@@ -2,7 +2,7 @@ export const AlphabetPanel = (props: any) => {
     const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     const elements: any[] = [];
 
-    alphabet.map((item: string) => {
+    alphabet.forEach((item: string) => {
         let attr = '';
         if (item === props.active) {
             attr = 'active';
@@ -12,13 +12,13 @@ export const AlphabetPanel = (props: any) => {
         if (item === 'z') {
             attr += ' last';
         }
-
         elements.push(
             <li className={attr} key={item}>
                 <a href=" ">{item}</a>
             </li>
         );
     });
+    
     return (
         <div className="alpha">
             <ul>

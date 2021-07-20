@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import '../../assets/css/Styles.css';
 import { NewItemForm } from '../forms/NewItemForm';
-import { Pagination } from '../Pagination';
-import { ClientDetailsList } from '../ClientDetailsList';
-import { LoadingComponent } from '../LoadingComponent';
-import { AlphabetPanel } from '../AlphabetPanel';
+import { Pagination } from '../shared/Pagination';
+import { ClientDetailsList } from '../clients/ClientDetailsList';
+import { LoadingComponent } from '../shared/LoadingComponent';
+import { AlphabetPanel } from '../shared/AlphabetPanel';
 import { useEffect } from 'react';
 import { clientService } from '../../services/clientService';
 
@@ -18,18 +18,36 @@ export const ClientsTabContent = () => {
 		setToggleNewItem(!toggleNewItem);
 	}
 
-	useEffect(() => {
-		clientService.getAll()
+	const refresh = () => {
+		console.log('Update - ClientsTabContent...');
+		clientService.read()
 			.then(response => {
 				if (response.success) {
 					setDataLoaded(true);
 					setData(response.data);
+					setToggleNewItem(false);
 				} else {
 					setDataLoaded(false);
 				}
-			})
-
+			});
 		clientService.clients.subscribe(x => setData(x));
+	}
+
+	useEffect(() => {
+		let isMounted = true;
+		clientService.read()
+			.then(response => {
+				if (isMounted) {
+					if (response.success) {
+						setDataLoaded(true);
+						setData(response.data);
+					} else {
+						setDataLoaded(false);
+					}
+				}
+			})
+		clientService.clients.subscribe(x => setData(x));
+		return () => { isMounted = false };
 	}, []);
 
 	return (
@@ -41,15 +59,15 @@ export const ClientsTabContent = () => {
 					<input type="search" name="search-clients" className="in-search" />
 				</div>
 			</div>
-			
-			{toggleNewItem && (<NewItemForm formType='client' />)}
+
+			{toggleNewItem && (<NewItemForm formType='client' handleToUpdate={refresh}/>)}
 
 			<AlphabetPanel active='k' disabled='m' />
-			
+
 			{!dataLoaded && <LoadingComponent />}
-			
-			{dataLoaded && <ClientDetailsList clients={data}/>}
-			
+
+			{dataLoaded && <ClientDetailsList clients={data} handleToUpdate={refresh}/>}
+
 			<Pagination />
 		</section>
 	);

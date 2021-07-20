@@ -1,5 +1,5 @@
 import '../assets/css/Styles.css'
-import MainLogo from '../components/MainLogo';
+import MainLogo from '../components/shared/MainLogo';
 import { useState, useRef } from 'react'
 import { useHistory } from 'react-router-dom';
 import { userService } from '../services/userService';

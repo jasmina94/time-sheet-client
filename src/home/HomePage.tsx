@@ -1,7 +1,7 @@
 import '../assets/css/Styles.css'
 import { useState } from 'react';
-import Footer from '../components/Footer';
-import UserMenu from '../components/UserMenu';
+import Footer from '../components/shared/Footer';
+import UserMenu from '../components/menu/UserMenu';
 import { menuItems } from '../components/menu/constants';
 import {
   ClientsTabContent, TimeSheetTabContent,

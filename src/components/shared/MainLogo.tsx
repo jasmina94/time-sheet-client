@@ -1,5 +1,5 @@
-import '../assets/css/Styles.css';
-import logoImage from '../assets/images/logo.png';
+import '../../assets/css/Styles.css';
+import logoImage from '../../assets/images/logo.png';
 
 const MainLogo = (props: any) => {
     return (

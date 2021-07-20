@@ -1,4 +1,4 @@
-export const ProjectForm = () => {
+export const ProjectForm = (props: any) => {
     return (
         <>
             <div className="new-member-wrap">

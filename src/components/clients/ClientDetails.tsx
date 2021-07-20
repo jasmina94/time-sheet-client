@@ -1,8 +1,12 @@
-import { useState } from "react";
-import { clientService } from "../services/clientService";
+import { useState, useMemo } from "react";
+import { clientService } from "../../services/clientService";
+import countryList from "react-select-country-list";
 
 export const ClientDetails = (props: any) => {
     console.log("ClientDetails rendered! - " + props.client.id + " - " + props.client.name);
+
+    const  countries = useMemo(() => countryList().getData(), []);
+
     const [state, setState] = useState({
         id: props.client.id,
         name: props.client.name,
@@ -21,18 +25,23 @@ export const ClientDetails = (props: any) => {
 
     const saveClient = (e: any) => {
         e.preventDefault();
-        clientService.updateClient({id: state.id, name: state.name, address: state.address, city: state.city, zip: state.zip, country: state.country})
+        clientService.update({id: state.id, name: state.name, address: state.address, city: state.city, zip: state.zip, country: state.country})
             .then(response => {
                 if (!response.success) {
                     setState({...state, error: response.error});
+                } else {
+                    const updated = response.data;
+                    setState({...state, id: updated.id, name: updated.name, address: updated.address, city: updated.city, zip: updated.zip, country: updated.country, showDetails: false});
+                    props.handleToUpdate();
+             
                 }
-            })
+            });
     }
 
     const deleteClient = (e: any) => {
         e.preventDefault();
         console.log('Delete: ' + state.id);
-        clientService.deleteClient(state.id)
+        clientService.remove(state.id)
             .then(response => {
                 if (!response.success) {
                     setState({...state, error: response.error});
@@ -40,6 +49,17 @@ export const ClientDetails = (props: any) => {
             })
     }
 
+
+    const renderCountryOptions = (): any[] => {
+        let options: any[] = [];
+        countries.forEach(item => {
+            options.push(
+                <option value={item.value} selected={state.country === item.value}>{item.label}</option>
+            );
+        });
+
+        return options;
+    }
 
     return (
         <div className="item">
@@ -66,8 +86,9 @@ export const ClientDetails = (props: any) => {
                         </li>
                         <li>
                             <label>Country:</label>
-                            <select name="country">
+                            <select name="country" value={state.country} onChange={(e) => {setState({...state, country: e.target.value})}}>
                                 <option>Select country</option>
+                                {renderCountryOptions()}
                             </select>
                         </li>
                     </ul>
