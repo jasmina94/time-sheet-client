@@ -11,7 +11,7 @@ export const Menu = (props: any) => {
                     href={item.href} displayName={item.displayName}
                     handleTabClick={props.handleTabClick}
                     activeTab={props.activeTab} />
-            )};
+            )}
         </ul>
     );
 };
