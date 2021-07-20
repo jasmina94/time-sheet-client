@@ -32,3 +32,17 @@ export interface Client {
     zip: string,
     country: string
 }
+
+export enum ProjectStatus {
+    INACTIVE = 0,
+    ACTIVE = 1,
+    ARCHIVE = 2
+}
+export interface Project {
+    id: number,
+    name: string,
+    customer: Client,
+    status: ProjectStatus,
+    description: string,
+    lead: string
+}

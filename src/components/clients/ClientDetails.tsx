@@ -3,8 +3,6 @@ import { clientService } from "../../services/clientService";
 import countryList from "react-select-country-list";
 
 export const ClientDetails = (props: any) => {
-    console.log("ClientDetails rendered! - " + props.client.id + " - " + props.client.name);
-
     const  countries = useMemo(() => countryList().getData(), []);
 
     const [state, setState] = useState({
@@ -40,7 +38,6 @@ export const ClientDetails = (props: any) => {
 
     const deleteClient = (e: any) => {
         e.preventDefault();
-        console.log('Delete: ' + state.id);
         clientService.remove(state.id)
             .then(response => {
                 if (!response.success) {
@@ -54,7 +51,7 @@ export const ClientDetails = (props: any) => {
         let options: any[] = [];
         countries.forEach(item => {
             options.push(
-                <option value={item.value} selected={state.country === item.value}>{item.label}</option>
+                <option value={item.value}>{item.label}</option>
             );
         });
 

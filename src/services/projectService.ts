@@ -1,33 +1,33 @@
 import { BehaviorSubject } from "rxjs";
 import { getAuthHeader } from "../helpers/authHeader";
 import { handleResponse } from "../api/ResponseHandler";
-import { Client } from "../model/Model";
+import { Project } from "../model/Model";
 const { REACT_APP_SERVER_PATH } = process.env;
 const { REACT_APP_SERVER_PORT } = process.env;
-const { REACT_APP_CLIENTS_PATH } = process.env;
+const { REACT_APP_PROJECTS_PATH } = process.env;
 
 const SERVER_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT;
-const CLIENTS_PATH = SERVER_PATH + '' + REACT_APP_CLIENTS_PATH;
+const PROJECTS_PATH = SERVER_PATH + '' + REACT_APP_PROJECTS_PATH;
 
-const clientsSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('clients') || 'null'));
+const projectsSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('projects') || 'null'));
 
-export const clientService = {
+export const projectService = {
     read,
     create,
     update,
     remove,
-    clients: clientsSubject.asObservable(),
-    get clientsValue(): Client[] { return clientsSubject.value },
+    projects: projectsSubject.asObservable(),
+    get projectsValue(): Project[] { return projectsSubject.value },
 };
 
 function read() {
     const requestOptions: any = { method: 'GET', headers: getAuthHeader() };
-    return fetch(CLIENTS_PATH, requestOptions)
+    return fetch(PROJECTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
             let data = response.data;
-            localStorage.setItem('clients', JSON.stringify(data));
-            clientsSubject.next(data);
+            localStorage.setItem('projects', JSON.stringify(data));
+            projectsSubject.next(data);
 
             return { success: true, data: data, error: '' };
         })
@@ -36,13 +36,13 @@ function read() {
         })
 }
 
-function create(client: Client) {
+function create(project: Project) {
     const requestOptions: any = {
         method: 'POST',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
+        body: JSON.stringify({})
     };
-    return fetch(CLIENTS_PATH, requestOptions)
+    return fetch(PROJECTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
             return { success: true, data: response.data, error: '' };
@@ -52,13 +52,13 @@ function create(client: Client) {
         })
 }
 
-function update(client: Client) {
+function update(project: Project) {
     const requestOptions: any = {
         method: 'PUT',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
+        body: JSON.stringify({})
     };
-    return fetch(CLIENTS_PATH + '/' + client.id, requestOptions)
+    return fetch(PROJECTS_PATH + '/' + project.id, requestOptions)
         .then(handleResponse)
         .then(response => {
             return { success: true, data: response.data, error: '' };
@@ -68,14 +68,15 @@ function update(client: Client) {
         })
 }
 
+//TODO: Try to make delete method to return EMPTY content
 function remove(id: number) {
     let requestOptions: any = { method: 'DELETE', headers: getAuthHeader() };
-    return fetch(CLIENTS_PATH + '/' + id, requestOptions)
+    return fetch(PROJECTS_PATH + '/' + id, requestOptions)
         .then(handleResponse)
         .then(response => {
             let data = response.data;
-            localStorage.setItem('clients', JSON.stringify(data));
-            clientsSubject.next(data);
+            localStorage.setItem('projects', JSON.stringify(data));
+            projectsSubject.next(data);
 
             return { success: true, data: data, error: '' };
         })
@@ -83,3 +84,4 @@ function remove(id: number) {
             return { success: false, data: {}, error: error };
         })
 }
+
