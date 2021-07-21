@@ -2,58 +2,45 @@ import { useState, useEffect } from "react";
 import { userService } from '../../services/api/userService';
 import { clientService } from '../../services/api/clientService';
 import { selectOptionService } from '../../services/selectOptionService';
+import { ProjectStatus } from "../../model/Model";
 
 export const ProjectDetails = (props: any) => {
     const [leadOptions, setLeadOptions] = useState([]);
-    const [clientOptions, setClientOptions] = useState([]);
+    const [customerOptions, setCustomerOptions] = useState([]);
+    const [toggleDetails, setToggleDetails] = useState(false);
 
     const [state, setState] = useState({
         id: props.project.id,
         name: props.project.name,
-        customer: props.project.customer.name,
+        customerId: props.project.customer.id,
+        customerName: props.project.customer.name,
         description: props.project.description,
         lead: props.project.lead.id,
         status: props.project.status,
-        toggleDetails: false,
-        clientLoaded: false,
-        leadLoaded: false
     });
 
-    useEffect(() => {
-        console.log('UseEffect - 1');
-        let isMounted = true;
+    console.log(state);
 
+    useEffect(() => {
         clientService.read()
             .then(response => {
-                if (isMounted) {
-                    if (response.success) {
-                        const clients = selectOptionService.getClients(response.data);
-                        setState({ ...state, clientLoaded: true});
-                        setClientOptions(clients);
-                    } else {
-                        setState({ ...state, clientLoaded: false });
-                    }
+                if (response.success) {
+                    const clients = selectOptionService.getClients(response.data);
+                    setCustomerOptions(clients);
                 }
             })
         userService.getAll()
             .then(users => {
-                console.log(users);
-                if (isMounted) {
-                    if (users && users.length !== 0) {
-                        const leads = selectOptionService.getLeads(users);
-                        setState({ ...state, leadLoaded: true })
-                        setLeadOptions(leads);
-                    } else {
-                        setState({ ...state, leadLoaded: false });
-                    }
+                if (users && users.length !== 0) {
+                    const leads = selectOptionService.getLeads(users);
+                    setLeadOptions(leads);
                 }
             })
-        return () => { isMounted = false };
     }, [])
 
     const handleToggleDetails = (e: any) => {
         e.preventDefault();
-        setState({ ...state, toggleDetails: true });
+        setToggleDetails(!toggleDetails);
     }
 
     const saveProject = () => {
@@ -67,10 +54,10 @@ export const ProjectDetails = (props: any) => {
     return (
         <div className="item">
             <div className="heading" onClick={handleToggleDetails}>
-                <span>{state.name}</span> <span><em>({state.customer})</em></span>
+                <span>{state.name}</span> <span><em>({state.customerName})</em></span>
                 <i>+</i>
             </div>
-            {state.toggleDetails && (
+            {toggleDetails && (
                 <div className="details">
                     <ul className="form">
                         <li>
@@ -80,7 +67,7 @@ export const ProjectDetails = (props: any) => {
                         <li>
                             <label>Lead:</label>
                             <select name="lead" value={state.lead} onChange={(e) => { setState({ ...state, lead: e.target.value }) }}>
-                                {state.leadLoaded && leadOptions != null && leadOptions.map((item: any) =>
+                                {leadOptions.map((item: any) =>
                                     <option value={item.value} key={item.value}>{item.label}</option>
                                 )}
                             </select>
@@ -96,8 +83,8 @@ export const ProjectDetails = (props: any) => {
                     <ul className="form last">
                         <li>
                             <label>Customer:</label>
-                            <select name="customer" onChange={(e) => { setState({ ...state, customer: e.target.value }) }}>
-                                {state.clientLoaded && clientOptions.map((item: any) =>
+                            <select name="customer" value={state.customerId} onChange={(e) => { setState({ ...state, customerId: e.target.value }) }}>
+                                {customerOptions.map((item: any) =>
                                     <option value={item.value} key={item.value}>{item.label}</option>
                                 )}
                             </select>
@@ -106,15 +93,18 @@ export const ProjectDetails = (props: any) => {
                             <label style={{ width: "100%" }}>Status:</label>
                             <span className="radio" style={{ width: "33%" }}>
                                 <label htmlFor="active">Inactive:</label>
-                                <input type="radio" value="0" name="status" />
+                                <input type="radio" value="0" name="status" 
+                                    checked={state.status === ProjectStatus.INACTIVE.valueOf()} onChange={() => setState({...state, status: ProjectStatus.INACTIVE.valueOf()})} />
                             </span>
                             <span className="radio" style={{ width: "33%" }}>
                                 <label htmlFor="inactive">Active:</label>
-                                <input type="radio" value="1" name="status" />
+                                <input type="radio" value="1" name="status" 
+                                    checked={state.status === ProjectStatus.ACTIVE.valueOf()} onChange={() => setState({...state, status: ProjectStatus.ACTIVE.valueOf()})} />
                             </span>
                             <span className="radio" style={{ width: "33%" }}>
                                 <label htmlFor="active">Archive:</label>
-                                <input type="radio" value="2" name="status" />
+                                <input type="radio" value="2" name="status" 
+                                    checked={state.status === ProjectStatus.ARCHIVE.valueOf()} onChange={() => setState({...state, status: ProjectStatus.ARCHIVE.valueOf()})} />
                             </span>
                         </li>
                     </ul>
