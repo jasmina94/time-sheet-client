@@ -1,7 +1,7 @@
 import '../../assets/css/Styles.css';
 import '../../assets/css/CustomStyles.css';
 
-const UserMenu = () => {
+export const UserMenu = () => {
     return (
         <div className="user-menu">
             <ul>
@@ -18,5 +18,3 @@ const UserMenu = () => {
         </div>
     )
 };
-
-export default UserMenu;

@@ -1,5 +1,7 @@
-import { getAuthHeader } from "../helpers/authHeader";
+import { getAuthHeader } from "../../helpers/authHeader";
+import { User } from "../../model/Model";
 import { handleResponse } from "../api/ResponseHandler";
+import { conversionService } from "../conversionService";
 const { REACT_APP_SERVER_PATH } = process.env;
 const { REACT_APP_SERVER_PORT } = process.env;
 const { REACT_APP_GET_USERS_PATH } = process.env;
@@ -16,7 +18,17 @@ export const userService = {
 
 function getAll() {
     const requestOptions: any = { method: 'GET', headers: getAuthHeader() };
-    return fetch(GET_ALL_USERS_PATH, requestOptions).then(handleResponse);
+    return fetch(GET_ALL_USERS_PATH, requestOptions)
+        .then(handleResponse)
+        .then(response => {
+            let users: User[] = [];
+            const data = response.data;
+            data.forEach((item: any) => {
+                users.push(conversionService.toUser(item));
+            });
+
+            return users;
+        });
 }
 
 function resetPassword(email: string) {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { clientService } from "../../services/clientService";
+import { clientService } from "../../services/api/clientService";
 import countryList from "react-select-country-list";
 import { useMemo } from "react";
 

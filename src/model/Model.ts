@@ -41,8 +41,8 @@ export enum ProjectStatus {
 export interface Project {
     id: number,
     name: string,
-    customer: Client,
     status: ProjectStatus,
     description: string,
-    lead: string
+    customer: Client,
+    lead: User
 }

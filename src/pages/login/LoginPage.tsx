@@ -1,9 +1,9 @@
-import '../assets/css/Styles.css';
-import MainLogo from '../components/shared/MainLogo';
-import ActionLink from '../components/shared/ActionLink';
+import '../../assets/css/Styles.css';
+import MainLogo from '../../components/shared/MainLogo';
+import ActionLink from '../../components/shared/ActionLink';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { authenticationService } from '../services/authenticationService';
+import { authenticationService } from '../../services/api/authenticationService';
 
 const LoginPage = () => {
 	let history = useHistory();

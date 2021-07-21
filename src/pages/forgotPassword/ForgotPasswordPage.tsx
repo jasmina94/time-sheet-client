@@ -1,8 +1,8 @@
-import '../assets/css/Styles.css'
-import MainLogo from '../components/shared/MainLogo';
+import '../../assets/css/Styles.css'
+import MainLogo from '../../components/shared/MainLogo';
 import { useState, useRef } from 'react'
 import { useHistory } from 'react-router-dom';
-import { userService } from '../services/userService';
+import { userService } from '../../services/api/userService';
 
 const ForgotPasswordPage = () => {
 	let history = useHistory();

@@ -1,13 +1,12 @@
 import { createBrowserHistory } from 'history';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
 import { PrivateRoute } from '../components/shared/PrivateRoute';
-import { authenticationService } from '../services/authenticationService';
+import { authenticationService } from '../services/api/authenticationService';
 import jwtDecode from 'jwt-decode';
-import HomePage from '../home/HomePage';
-import LoginPage from '../login/LoginPage';
-import ForgotPasswordPage from '../forgotPassword/ForgotPasswordPage';
+import HomePage from '../pages/home/HomePage';
+import LoginPage from '../pages/login/LoginPage';
+import ForgotPasswordPage from '../pages/forgotPassword/ForgotPasswordPage';
 import { UserSessionInfo } from '../model/Model';
 
 export const history = createBrowserHistory();

@@ -1,6 +1,6 @@
 import { BehaviorSubject } from "rxjs";
-import { handleResponse } from "../api/ResponseHandler";
-import { ApiResponse } from "../model/Model";
+import { handleResponse } from '../api/ResponseHandler';
+import { ApiResponse } from '../../model/Model';
 const { REACT_APP_SERVER_PATH } = process.env;
 const { REACT_APP_SERVER_PORT } = process.env;
 const { REACT_APP_LOGIN_PATH } = process.env;

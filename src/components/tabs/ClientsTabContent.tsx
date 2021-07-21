@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import '../../assets/css/Styles.css';
 import { NewItemForm } from '../forms/NewItemForm';
 import { Pagination } from '../shared/Pagination';
@@ -6,8 +6,7 @@ import { ClientDetailsList } from '../clients/ClientDetailsList';
 import { LoadingComponent } from '../shared/LoadingComponent';
 import { AlphabetPanel } from '../shared/AlphabetPanel';
 import { SearchControl } from '../shared/SearchControl';
-import { useEffect } from 'react';
-import { clientService } from '../../services/clientService';
+import { clientService } from '../../services/api/clientService';
 import { Client } from '../../model/Model';
 
 export const ClientsTabContent = () => {

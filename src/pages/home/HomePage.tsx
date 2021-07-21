@@ -1,16 +1,15 @@
-import '../assets/css/Styles.css'
+import '../../assets/css/Styles.css';
 import { useState } from 'react';
-import Footer from '../components/shared/Footer';
-import UserMenu from '../components/menu/UserMenu';
-import { menuItems } from '../components/menu/constants';
+import { useHistory } from 'react-router';
+import Footer from '../../components/shared/Footer';
 import {
   ClientsTabContent, TimeSheetTabContent,
   ReportsTabContent, ProjectsTabContent,
   CategoriesTabContent, TeamMembersTabContent
-} from '../components/tabs';
-import { Menu, MobileMenu } from '../components/menu';
-import { authenticationService } from '../services/authenticationService';
-import { useHistory } from 'react-router';
+} from '../../components/tabs';
+import { Menu, MobileMenu, UserMenu, menuItems } from '../../components/menu'
+import { authenticationService } from '../../services/api/authenticationService'
+
 
 
 const HomePage = (props: any) => {

@@ -1,60 +1,59 @@
-import { useMemo, useState } from "react";
-import { Client } from "../../model/Model";
-import { clientService } from '../../services/clientService';
-
-const fetchLeads = () => {
-    console.log('fetch leads...');
-    return [
-        {
-            label: 'Sasa Popovic',
-            value: 1
-        },
-        {
-            label: 'Milica Popovic',
-            value: 2
-        },
-        {
-            label: 'Zeljko Obradovic',
-            value: 3
-        }
-    ]
-}
-
-const fetchCustomers = () => {
-    let customers: any[] = [];
-    console.log('fetch customers...');
-    clientService.read()
-        .then(response => {
-            if (response.success) {
-                const clients = response.data;
-                clients.forEach((item: Client) => {
-                    customers.push({ label: item.name, value: item.id });
-                })
-            }
-        });
-    return customers;
-}
+import { useState, useEffect } from "react";
+import { userService } from '../../services/api/userService';
+import { clientService } from '../../services/api/clientService';
+import { selectOptionService } from '../../services/selectOptionService';
 
 export const ProjectDetails = (props: any) => {
-    const leads = useMemo(() => fetchLeads(), []);
-    const customers = useMemo(() => fetchCustomers(), []);
+    const [leadOptions, setLeadOptions] = useState([]);
+    const [clientOptions, setClientOptions] = useState([]);
 
     const [state, setState] = useState({
         id: props.project.id,
         name: props.project.name,
-        customer: props.project.client.name,
+        customer: props.project.customer.name,
         description: props.project.description,
-        lead: props.project.lead,
-        status: props.project.status
+        lead: props.project.lead.id,
+        status: props.project.status,
+        toggleDetails: false,
+        clientLoaded: false,
+        leadLoaded: false
     });
 
-    const renderOptions = (items: any[]) => {
-        let options: any[] = [];
-        items.forEach(item => {
-            options.push(<option value={item.value}>{item.label}</option>)
-        });
+    useEffect(() => {
+        console.log('UseEffect - 1');
+        let isMounted = true;
 
-        return options;
+        clientService.read()
+            .then(response => {
+                if (isMounted) {
+                    if (response.success) {
+                        const clients = selectOptionService.getClients(response.data);
+                        setState({ ...state, clientLoaded: true});
+                        setClientOptions(clients);
+                    } else {
+                        setState({ ...state, clientLoaded: false });
+                    }
+                }
+            })
+        userService.getAll()
+            .then(users => {
+                console.log(users);
+                if (isMounted) {
+                    if (users && users.length !== 0) {
+                        const leads = selectOptionService.getLeads(users);
+                        setState({ ...state, leadLoaded: true })
+                        setLeadOptions(leads);
+                    } else {
+                        setState({ ...state, leadLoaded: false });
+                    }
+                }
+            })
+        return () => { isMounted = false };
+    }, [])
+
+    const handleToggleDetails = (e: any) => {
+        e.preventDefault();
+        setState({ ...state, toggleDetails: true });
     }
 
     const saveProject = () => {
@@ -67,62 +66,66 @@ export const ProjectDetails = (props: any) => {
 
     return (
         <div className="item">
-            <div className="heading">
+            <div className="heading" onClick={handleToggleDetails}>
                 <span>{state.name}</span> <span><em>({state.customer})</em></span>
                 <i>+</i>
             </div>
-            <div className="details">
-                <ul className="form">
-                    <li>
-                        <label>Project name:</label>
-                        <input type="text" name="name" className="in-text" value={state.name} />
-                    </li>
-                    <li>
-                        <label>Lead:</label>
-                        <select name="lead" value={state.lead}>
-                            <option>Select lead</option>
-                            {renderOptions(leads)}
-                        </select>
-                    </li>
-                </ul>
-                <ul className="form">
-                    <li>
-                        <label>Description:</label>
-                        <input type="text" name="description" className="in-text" value={state.description} />
-                    </li>
+            {state.toggleDetails && (
+                <div className="details">
+                    <ul className="form">
+                        <li>
+                            <label>Project name:</label>
+                            <input type="text" name="name" className="in-text" value={state.name} onChange={(e) => { setState({ ...state, name: e.target.value }) }} />
+                        </li>
+                        <li>
+                            <label>Lead:</label>
+                            <select name="lead" value={state.lead} onChange={(e) => { setState({ ...state, lead: e.target.value }) }}>
+                                {state.leadLoaded && leadOptions != null && leadOptions.map((item: any) =>
+                                    <option value={item.value} key={item.value}>{item.label}</option>
+                                )}
+                            </select>
+                        </li>
+                    </ul>
+                    <ul className="form">
+                        <li>
+                            <label>Description:</label>
+                            <input type="text" name="description" className="in-text" value={state.description} onChange={(e) => { setState({ ...state, description: e.target.value }) }} />
+                        </li>
 
-                </ul>
-                <ul className="form last">
-                    <li>
-                        <label>Customer:</label>
-                        <select>
-                            <option>Select customer</option>
-                            {renderOptions(customers)}
-                        </select>
-                    </li>
-                    <li className="inline">
-                        <label>Status:</label>
-                        <span className="radio">
-                            <label htmlFor="active">Inactive:</label>
-                            <input type="radio" value="0" name="status" />
-                        </span>
-                        <span className="radio">
-                            <label htmlFor="inactive">Active:</label>
-                            <input type="radio" value="1" name="status" />
-                        </span>
-                        <span className="radio">
-                            <label htmlFor="active">Archive:</label>
-                            <input type="radio" value="2" name="status" />
-                        </span>
-                    </li>
-                </ul>
-                <div className="buttons">
-                    <div className="inner">
-                        <a href=" " className="btn green" onClick={saveProject}>Save</a>
-                        <a href=" " className="btn red" onClick={deleteProject}>Delete</a>
+                    </ul>
+                    <ul className="form last">
+                        <li>
+                            <label>Customer:</label>
+                            <select name="customer" onChange={(e) => { setState({ ...state, customer: e.target.value }) }}>
+                                {state.clientLoaded && clientOptions.map((item: any) =>
+                                    <option value={item.value} key={item.value}>{item.label}</option>
+                                )}
+                            </select>
+                        </li>
+                        <li className="inline">
+                            <label style={{ width: "100%" }}>Status:</label>
+                            <span className="radio" style={{ width: "33%" }}>
+                                <label htmlFor="active">Inactive:</label>
+                                <input type="radio" value="0" name="status" />
+                            </span>
+                            <span className="radio" style={{ width: "33%" }}>
+                                <label htmlFor="inactive">Active:</label>
+                                <input type="radio" value="1" name="status" />
+                            </span>
+                            <span className="radio" style={{ width: "33%" }}>
+                                <label htmlFor="active">Archive:</label>
+                                <input type="radio" value="2" name="status" />
+                            </span>
+                        </li>
+                    </ul>
+                    <div className="buttons">
+                        <div className="inner">
+                            <a href=" " className="btn green" onClick={saveProject}>Save</a>
+                            <a href=" " className="btn red" onClick={deleteProject}>Delete</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }

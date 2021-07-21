@@ -1,4 +1,4 @@
-import { authenticationService } from "../services/authenticationService";
+import { authenticationService } from "../api/authenticationService";
 
 const UNAUTH = [401, 403];
 

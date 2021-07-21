@@ -1,14 +1,14 @@
 import '../../assets/css/Styles.css';
 import '../../assets/css/Styles.css';
 import { useState, useEffect } from 'react';
-import { projectService } from '../../services/projectService';
+import { projectService } from '../../services/api/projectService';
 import { NewItemForm } from '../forms/NewItemForm';
 import { Pagination } from '../shared/Pagination';
 import { AlphabetPanel } from '../shared/AlphabetPanel';
 import { LoadingComponent } from '../shared/LoadingComponent';
-import { ProjectDetailsList} from '../projects/ProjectDetailsList';
+import { ProjectDetailsList } from '../projects/ProjectDetailsList';
 
-export const ProjectsTabContent = ()  => {
+export const ProjectsTabContent = () => {
 	const [data, setData] = useState(projectService.projectsValue);
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [toggleNewItem, setToggleNewItem] = useState(false);
@@ -17,7 +17,7 @@ export const ProjectsTabContent = ()  => {
 		e.preventDefault();
 		setToggleNewItem(!toggleNewItem);
 	}
-	
+
 	useEffect(() => {
 		let isMounted = true;
 		projectService.read()
@@ -31,28 +31,30 @@ export const ProjectsTabContent = ()  => {
 					}
 				}
 			})
-			projectService.projects.subscribe(x => setData(x));
+
+		projectService.projects.subscribe(x => setData(x));
+
 		return () => { isMounted = false };
-	})
+	}, [])
 
-    return (
-        <section className="content">
-				<h2><i className="ico projects"></i>Projects</h2>
-				<div className="grey-box-wrap reports">
-					<a href="#new-member" className="link new-member-popup" onClick={handleNewMember}>Create new project</a>
-					<div className="search-page">
-						<input type="search" name="search-clients" className="in-search" />
-					</div>
+	return (
+		<section className="content">
+			<h2><i className="ico projects"></i>Projects</h2>
+			<div className="grey-box-wrap reports">
+				<a href="#new-member" className="link new-member-popup" onClick={handleNewMember}>Create new project</a>
+				<div className="search-page">
+					<input type="search" name="search-clients" className="in-search" />
 				</div>
-				{toggleNewItem && (<NewItemForm formType='project'/>)}
+			</div>
+			{toggleNewItem && (<NewItemForm formType='project' />)}
 
-				<AlphabetPanel active='m'/>
-				
-				{!dataLoaded && <LoadingComponent/>}
+			<AlphabetPanel active='m' />
 
-				{dataLoaded && <ProjectDetailsList projects={data} />}
+			{!dataLoaded && <LoadingComponent />}
 
-				<Pagination />
-			</section>		
-    );
+			{dataLoaded && <ProjectDetailsList projects={data} />}
+
+			<Pagination />
+		</section>
+	);
 }

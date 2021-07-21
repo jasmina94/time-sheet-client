@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { clientService } from "../../services/clientService";
+import { clientService } from "../../services/api/clientService";
 import countryList from "react-select-country-list";
 
 export const ClientDetails = (props: any) => {
@@ -31,7 +31,6 @@ export const ClientDetails = (props: any) => {
                     const updated = response.data;
                     setState({...state, id: updated.id, name: updated.name, address: updated.address, city: updated.city, zip: updated.zip, country: updated.country, showDetails: false});
                     props.handleToUpdate();
-             
                 }
             });
     }

@@ -1,33 +1,33 @@
 import { BehaviorSubject } from "rxjs";
-import { getAuthHeader } from "../helpers/authHeader";
+import { getAuthHeader } from "../../helpers/authHeader";
 import { handleResponse } from "../api/ResponseHandler";
-import { Project } from "../model/Model";
+import { Client } from "../../model/Model";
 const { REACT_APP_SERVER_PATH } = process.env;
 const { REACT_APP_SERVER_PORT } = process.env;
-const { REACT_APP_PROJECTS_PATH } = process.env;
+const { REACT_APP_CLIENTS_PATH } = process.env;
 
 const SERVER_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT;
-const PROJECTS_PATH = SERVER_PATH + '' + REACT_APP_PROJECTS_PATH;
+const CLIENTS_PATH = SERVER_PATH + '' + REACT_APP_CLIENTS_PATH;
 
-const projectsSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('projects') || 'null'));
+const clientsSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('clients') || 'null'));
 
-export const projectService = {
+export const clientService = {
     read,
     create,
     update,
     remove,
-    projects: projectsSubject.asObservable(),
-    get projectsValue(): Project[] { return projectsSubject.value },
+    clients: clientsSubject.asObservable(),
+    get clientsValue(): Client[] { return clientsSubject.value },
 };
 
 function read() {
     const requestOptions: any = { method: 'GET', headers: getAuthHeader() };
-    return fetch(PROJECTS_PATH, requestOptions)
+    return fetch(CLIENTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
             let data = response.data;
-            localStorage.setItem('projects', JSON.stringify(data));
-            projectsSubject.next(data);
+            localStorage.setItem('clients', JSON.stringify(data));
+            clientsSubject.next(data);
 
             return { success: true, data: data, error: '' };
         })
@@ -36,13 +36,13 @@ function read() {
         })
 }
 
-function create(project: Project) {
+function create(client: Client) {
     const requestOptions: any = {
         method: 'POST',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
     };
-    return fetch(PROJECTS_PATH, requestOptions)
+    return fetch(CLIENTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
             return { success: true, data: response.data, error: '' };
@@ -52,13 +52,13 @@ function create(project: Project) {
         })
 }
 
-function update(project: Project) {
+function update(client: Client) {
     const requestOptions: any = {
         method: 'PUT',
         headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
     };
-    return fetch(PROJECTS_PATH + '/' + project.id, requestOptions)
+    return fetch(CLIENTS_PATH + '/' + client.id, requestOptions)
         .then(handleResponse)
         .then(response => {
             return { success: true, data: response.data, error: '' };
@@ -68,15 +68,14 @@ function update(project: Project) {
         })
 }
 
-//TODO: Try to make delete method to return EMPTY content
 function remove(id: number) {
     let requestOptions: any = { method: 'DELETE', headers: getAuthHeader() };
-    return fetch(PROJECTS_PATH + '/' + id, requestOptions)
+    return fetch(CLIENTS_PATH + '/' + id, requestOptions)
         .then(handleResponse)
         .then(response => {
             let data = response.data;
-            localStorage.setItem('projects', JSON.stringify(data));
-            projectsSubject.next(data);
+            localStorage.setItem('clients', JSON.stringify(data));
+            clientsSubject.next(data);
 
             return { success: true, data: data, error: '' };
         })
@@ -84,4 +83,3 @@ function remove(id: number) {
             return { success: false, data: {}, error: error };
         })
 }
-
