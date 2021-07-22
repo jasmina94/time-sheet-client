@@ -85,7 +85,7 @@ export const ClientsTabContent = () => {
 
 			{toggleNewItem && (<NewItemForm formType='client' handleToUpdate={refresh} />)}
 
-			<AlphabetPanel active='k' disabled='m' />
+			<AlphabetPanel />
 
 			{!dataLoaded && <LoadingComponent />}
 

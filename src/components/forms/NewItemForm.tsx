@@ -1,7 +1,7 @@
 import '../../assets/css/Styles.css';
 
 import { ClientForm } from '../clients/ClientForm';
-import { ProjectForm } from './ProjectForm';
+import { ProjectForm } from '../projects/ProjectForm';
 
 export const NewItemForm = (props: any) => {
 	const renderFormContent = () => {

@@ -4,9 +4,9 @@ export const AlphabetPanel = (props: any) => {
 
     alphabet.forEach((item: string) => {
         let attr = '';
-        if (item === props.active) {
+        if (props.active !== '' && item === props.active) {
             attr = 'active';
-        } else if (item === props.disabled) {
+        } else if (props.disabled !== '' && item === props.disabled) {
             attr = 'disabled';
         }
         if (item === 'z') {

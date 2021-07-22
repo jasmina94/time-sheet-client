@@ -40,7 +40,8 @@ function create(project: Project) {
     const requestOptions: any = {
         method: 'POST',
         headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({name: project.name, description: project.description,
+            status: project.status, customer: project.customer, lead: project.lead})
     };
     return fetch(PROJECTS_PATH, requestOptions)
         .then(handleResponse)
@@ -56,7 +57,8 @@ function update(project: Project) {
     const requestOptions: any = {
         method: 'PUT',
         headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({id: project.id, name: project.name, description: project.description,
+            status: project.status, customer: project.customer, lead: project.lead})
     };
     return fetch(PROJECTS_PATH + '/' + project.id, requestOptions)
         .then(handleResponse)
@@ -73,13 +75,7 @@ function remove(id: number) {
     let requestOptions: any = { method: 'DELETE', headers: tokenHelper.getAuthHeader() };
     return fetch(PROJECTS_PATH + '/' + id, requestOptions)
         .then(handleResponse)
-        .then(response => {
-            let data = response.data;
-            localStorage.setItem('projects', JSON.stringify(data));
-            projectsSubject.next(data);
-
-            return { success: true, data: data, error: '' };
-        })
+        .then(response => { return response; })
         .catch(error => {
             return { success: false, data: {}, error: error };
         })

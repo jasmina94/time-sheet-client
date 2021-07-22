@@ -39,10 +39,10 @@ export enum ProjectStatus {
     ARCHIVE = 2
 }
 export interface Project {
-    id: number,
+    id: string,
     name: string,
-    status: ProjectStatus,
+    status: number,
     description: string,
-    customer: Client,
-    lead: User
+    customer: number,
+    lead: number
 }
