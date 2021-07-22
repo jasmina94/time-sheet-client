@@ -18,7 +18,7 @@ const HomePage = (props: any) => {
   const [openProfile, setOpenProfile] = useState(false);
   const [activeTab, setActiveTab] = useState('timesheet');
   const [userInfo, setUserInfo] = useState(props.userInfo);
-  const [token, setToken] = useState(authenticationService.tokenValue);
+  const [token] = useState(authenticationService.tokenValue);
 
   useEffect(() => {    
     if (tokenHelper.isTokenExpired(token)) {
@@ -68,17 +68,17 @@ const HomePage = (props: any) => {
       <header>
         <div className="top-bar"></div>
         <div className="wrapper">
-          <a href=" " className="logo" onClick={() => history.push('/')}>
+          <a href="!#" className="logo" onClick={() => history.push('/')}>
             <img src="logo.png" alt="Emakina Timesheet" />
           </a>
           <ul className="user right">
             <li>
-              <a href=" " onClick={handleProfileLink}>{userInfo.firstname} {userInfo.lastname}</a>
+              <a href="!#" onClick={handleProfileLink}>{userInfo.firstname} {userInfo.lastname}</a>
               <div className="invisible"></div>
               {openProfile && (<UserMenu />)}
             </li>
             <li className="last">
-              <a href="" onClick={logout}>Logout</a>
+              <a href="!#" onClick={logout}>Logout</a>
             </li>
           </ul>
           <nav>

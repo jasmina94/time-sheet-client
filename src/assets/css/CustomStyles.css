@@ -13,3 +13,7 @@
     color: red;
     font-style: italic;
 }
+
+.active-page {
+    background-color: lightblue;
+}

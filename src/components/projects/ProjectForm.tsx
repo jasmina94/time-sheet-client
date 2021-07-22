@@ -1,7 +1,7 @@
 import { clientService } from "../../services/api/clientService";
 import { selectOptionService } from "../../services/selectOptionService";
 import { userService } from "../../services/api/userService";
-import { useState, useEffect, isValidElement } from "react";
+import { useState, useEffect } from "react";
 import { projectService } from "../../services/api/projectService";
 
 export const ProjectForm = (props: any) => {

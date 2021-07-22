@@ -10,6 +10,8 @@ import { clientService } from '../../services/api/clientService';
 import { Client } from '../../model/Model';
 
 export const ClientsTabContent = () => {
+	const [currentPage, setCurrentPage] = useState(1);
+  	const [dataPerPage] = useState(4);
 	const [data, setData] = useState(clientService.clientsValue);
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [toggleNewItem, setToggleNewItem] = useState(false);
@@ -75,6 +77,14 @@ export const ClientsTabContent = () => {
 		}
 	}
 
+	const indexOfLastPost = currentPage * dataPerPage;
+	const indexOfFirstPost = indexOfLastPost - dataPerPage;
+	const currentClients = data.slice(indexOfFirstPost, indexOfLastPost);
+
+	const changePage = (pageNum: number) => {
+		setCurrentPage(pageNum);
+	}
+
 	return (
 		<section className="content">
 			<h2><i className="ico clients"></i>Clients</h2>
@@ -89,9 +99,10 @@ export const ClientsTabContent = () => {
 
 			{!dataLoaded && <LoadingComponent />}
 
-			{dataLoaded && <ClientDetailsList clients={data} handleToUpdate={refresh} />}
+			{dataLoaded && <ClientDetailsList clients={currentClients} handleToUpdate={refresh} />}
 
-			<Pagination />
+			<Pagination activePage={currentPage} perPage={dataPerPage} total={data.length} paginate={changePage} />
+
 		</section>
 	);
 }

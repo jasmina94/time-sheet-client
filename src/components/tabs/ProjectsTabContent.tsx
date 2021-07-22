@@ -11,6 +11,8 @@ import { Project } from '../../model/Model';
 import { SearchControl } from '../shared/SearchControl';
 
 export const ProjectsTabContent = () => {
+	const [currentPage, setCurrentPage] = useState(1);
+  	const [dataPerPage] = useState(2);
 	const [data, setData] = useState(projectService.projectsValue);
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [toggleNewItem, setToggleNewItem] = useState(false);
@@ -75,6 +77,14 @@ export const ProjectsTabContent = () => {
 		}
 	}
 
+	const indexOfLastPost = currentPage * dataPerPage;
+	const indexOfFirstPost = indexOfLastPost - dataPerPage;
+	const currentProjects = data.slice(indexOfFirstPost, indexOfLastPost);
+
+	const changePage = (pageNum: number) => {
+		setCurrentPage(pageNum);
+	}
+
 	return (
 		<section className="content">
 			<h2><i className="ico projects"></i>Projects</h2>
@@ -88,9 +98,10 @@ export const ProjectsTabContent = () => {
 
 			{!dataLoaded && <LoadingComponent />}
 
-			{dataLoaded && <ProjectDetailsList projects={data} handleToUpdate={refresh} />}
+			{dataLoaded && <ProjectDetailsList projects={currentProjects} handleToUpdate={refresh} />}
 
-			<Pagination />
+			<Pagination perPage={dataPerPage} total={data.length} paginate={changePage}/>
+			
 		</section>
 	);
 }
