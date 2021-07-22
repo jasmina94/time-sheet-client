@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { getAuthHeader } from "../../helpers/authHeader";
+import { tokenHelper } from "../../helpers/tokenHelper"
 import { handleResponse } from "../api/ResponseHandler";
 import { Client } from "../../model/Model";
 const { REACT_APP_SERVER_PATH } = process.env;
@@ -21,7 +21,7 @@ export const clientService = {
 };
 
 function read() {
-    const requestOptions: any = { method: 'GET', headers: getAuthHeader() };
+    const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
     return fetch(CLIENTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
@@ -39,7 +39,7 @@ function read() {
 function create(client: Client) {
     const requestOptions: any = {
         method: 'POST',
-        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
     };
     return fetch(CLIENTS_PATH, requestOptions)
@@ -55,7 +55,7 @@ function create(client: Client) {
 function update(client: Client) {
     const requestOptions: any = {
         method: 'PUT',
-        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
     };
     return fetch(CLIENTS_PATH + '/' + client.id, requestOptions)
@@ -69,7 +69,7 @@ function update(client: Client) {
 }
 
 function remove(id: number) {
-    let requestOptions: any = { method: 'DELETE', headers: getAuthHeader() };
+    let requestOptions: any = { method: 'DELETE', headers: tokenHelper.getAuthHeader() };
     return fetch(CLIENTS_PATH + '/' + id, requestOptions)
         .then(handleResponse)
         .then(response => {

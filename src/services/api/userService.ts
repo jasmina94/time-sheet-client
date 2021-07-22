@@ -1,5 +1,5 @@
-import { getAuthHeader } from "../../helpers/authHeader";
 import { User } from "../../model/Model";
+import { tokenHelper } from "../../helpers/tokenHelper";
 import { handleResponse } from "../api/ResponseHandler";
 import { conversionService } from "../conversionService";
 const { REACT_APP_SERVER_PATH } = process.env;
@@ -17,7 +17,7 @@ export const userService = {
 };
 
 function getAll() {
-    const requestOptions: any = { method: 'GET', headers: getAuthHeader() };
+    const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
     return fetch(GET_ALL_USERS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {

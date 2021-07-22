@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { getAuthHeader } from "../../helpers/authHeader";
+import { tokenHelper } from "../../helpers/tokenHelper";
 import { Project } from "../../model/Model";
 import { handleResponse } from "./ResponseHandler";
 const { REACT_APP_SERVER_PATH } = process.env;
@@ -21,7 +21,7 @@ export const projectService = {
 };
 
 function read() {
-    const requestOptions: any = { method: 'GET', headers: getAuthHeader() };
+    const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
     return fetch(PROJECTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
@@ -39,7 +39,7 @@ function read() {
 function create(project: Project) {
     const requestOptions: any = {
         method: 'POST',
-        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({})
     };
     return fetch(PROJECTS_PATH, requestOptions)
@@ -55,7 +55,7 @@ function create(project: Project) {
 function update(project: Project) {
     const requestOptions: any = {
         method: 'PUT',
-        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({})
     };
     return fetch(PROJECTS_PATH + '/' + project.id, requestOptions)
@@ -70,7 +70,7 @@ function update(project: Project) {
 
 //TODO: Try to make delete method to return EMPTY content
 function remove(id: number) {
-    let requestOptions: any = { method: 'DELETE', headers: getAuthHeader() };
+    let requestOptions: any = { method: 'DELETE', headers: tokenHelper.getAuthHeader() };
     return fetch(PROJECTS_PATH + '/' + id, requestOptions)
         .then(handleResponse)
         .then(response => {

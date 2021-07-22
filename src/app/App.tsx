@@ -1,9 +1,9 @@
 import { createBrowserHistory } from 'history';
 import { useState, useEffect } from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
+import { tokenHelper } from '../helpers/tokenHelper';
 import { PrivateRoute } from '../components/shared/PrivateRoute';
 import { authenticationService } from '../services/api/authenticationService';
-import jwtDecode from 'jwt-decode';
 import HomePage from '../pages/home/HomePage';
 import LoginPage from '../pages/login/LoginPage';
 import ForgotPasswordPage from '../pages/forgotPassword/ForgotPasswordPage';
@@ -21,31 +21,14 @@ const App = () => {
     const [token, setToken] = useState(authenticationService.tokenValue);
     const [userInfo, setUserInfo] = useState(initState);
 
-    const checkUserExpiration = () => {
-        let userExpired = false;
-        if (token && Object.keys(token).length !== 0) {
-            const decoded: any = jwtDecode(token);
-            const now = Date.now() / 1000;
-            if (decoded.exp < now) {
-                userExpired = true;
-            }
-        } else {
-            userExpired = true;
-        }
-
-        return userExpired;
-    }
-
     useEffect(() => {
-        if (checkUserExpiration()) {
+        if (tokenHelper.isTokenExpired(token)) {
             authenticationService.logout();
         } else {
-            const decoded: any = jwtDecode(token);
-            setUserInfo(decoded.userInfo);
+            setUserInfo(tokenHelper.getUserInfo(token));
         }
 
         authenticationService.token.subscribe(x => setToken(x));
-
     }, []);
 
     return (

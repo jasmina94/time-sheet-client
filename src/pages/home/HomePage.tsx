@@ -1,6 +1,7 @@
 import '../../assets/css/Styles.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
+import { tokenHelper } from '../../helpers/tokenHelper';
 import Footer from '../../components/shared/Footer';
 import {
   ClientsTabContent, TimeSheetTabContent,
@@ -16,6 +17,16 @@ const HomePage = (props: any) => {
   const history = useHistory();
   const [openProfile, setOpenProfile] = useState(false);
   const [activeTab, setActiveTab] = useState('timesheet');
+  const [userInfo, setUserInfo] = useState(props.userInfo);
+  const [token, setToken] = useState(authenticationService.tokenValue);
+
+  useEffect(() => {    
+    if (tokenHelper.isTokenExpired(token)) {
+        authenticationService.logout();
+    } else {
+        setUserInfo(tokenHelper.getUserInfo(token));
+    }
+}, []);
 
   const logout = (e: any) => {
     e.preventDefault();
@@ -62,7 +73,7 @@ const HomePage = (props: any) => {
           </a>
           <ul className="user right">
             <li>
-              <a href=" " onClick={handleProfileLink}>{props.userInfo.firstname} {props.userInfo.lastname}</a>
+              <a href=" " onClick={handleProfileLink}>{userInfo.firstname} {userInfo.lastname}</a>
               <div className="invisible"></div>
               {openProfile && (<UserMenu />)}
             </li>
