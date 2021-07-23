@@ -100,7 +100,7 @@ export const ProjectsTabContent = () => {
 
 			{dataLoaded && <ProjectDetailsList projects={currentProjects} handleToUpdate={refresh} />}
 
-			<Pagination perPage={dataPerPage} total={data.length} paginate={changePage}/>
+			<Pagination activePage={currentPage} perPage={dataPerPage} total={data.length} paginate={changePage}/>
 			
 		</section>
 	);
