@@ -12,10 +12,11 @@ import { SearchControl } from '../shared/SearchControl';
 
 export const ProjectsTabContent = () => {
 	const [currentPage, setCurrentPage] = useState(1);
-  	const [dataPerPage] = useState(2);
+	const [dataPerPage] = useState(2);
 	const [data, setData] = useState(projectService.projectsValue);
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [toggleNewItem, setToggleNewItem] = useState(false);
+	const [activeLetter, setActiveLetter] = useState('');
 
 	useEffect(() => {
 		let isMounted = true;
@@ -39,7 +40,7 @@ export const ProjectsTabContent = () => {
 	const handleNewMember = (e: any) => {
 		setToggleNewItem(!toggleNewItem);
 	}
-	
+
 	const refresh = () => {
 		projectService.read()
 			.then(response => {
@@ -60,7 +61,7 @@ export const ProjectsTabContent = () => {
 		term = term.toLocaleLowerCase();
 
 		if (project.name.toLowerCase().indexOf(term) !== -1
-	 		|| project.description.toLocaleLowerCase().indexOf(term) !== -1) {
+			|| project.description.toLocaleLowerCase().indexOf(term) !== -1) {
 			match = true;
 		}
 
@@ -77,6 +78,19 @@ export const ProjectsTabContent = () => {
 		}
 	}
 
+	const searchByLetter = (letter: string) => {
+		if (activeLetter === letter) {
+			setActiveLetter('');
+			refresh();
+		} else {
+			setActiveLetter(letter);
+			let filtered = data.filter(x => x.name.toLowerCase().startsWith(letter));
+			if (filtered.length != 0) {
+				setData(filtered);
+			}
+		}
+	}
+
 	const indexOfLastPost = currentPage * dataPerPage;
 	const indexOfFirstPost = indexOfLastPost - dataPerPage;
 	const currentProjects = data.slice(indexOfFirstPost, indexOfLastPost);
@@ -90,18 +104,18 @@ export const ProjectsTabContent = () => {
 			<h2><i className="ico projects"></i>Projects</h2>
 			<div className="grey-box-wrap reports">
 				<a href="#new-member" className="link new-member-popup" onClick={handleNewMember}>Create new project</a>
-				<SearchControl name="search-project" searchAction={searchProject}/>
+				<SearchControl name="search-project" searchAction={searchProject} />
 			</div>
 			{toggleNewItem && (<NewItemForm formType='project' handleToUpdate={refresh} />)}
 
-			<AlphabetPanel />
+			<AlphabetPanel disabled='a' alphabetSearch={searchByLetter} />
 
 			{!dataLoaded && <LoadingComponent />}
 
 			{dataLoaded && <ProjectDetailsList projects={currentProjects} handleToUpdate={refresh} />}
 
-			<Pagination activePage={currentPage} perPage={dataPerPage} total={data.length} paginate={changePage}/>
-			
+			<Pagination activePage={currentPage} perPage={dataPerPage} total={data.length} paginate={changePage} />
+
 		</section>
 	);
 }

@@ -15,6 +15,8 @@ export const ClientsTabContent = () => {
 	const [data, setData] = useState(clientService.clientsValue);
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [toggleNewItem, setToggleNewItem] = useState(false);
+	const [filterOn, setFilterOn] = useState(false);
+	const [activeLetter, setActiveLetter] = useState('');
 
 	const handleNewMember = (e: any) => {
 		e.preventDefault();
@@ -77,6 +79,20 @@ export const ClientsTabContent = () => {
 		}
 	}
 
+	const searchByLetter = (letter: string) => {
+		if (activeLetter === letter) {
+			setActiveLetter('');
+			refresh();
+		} else {
+			setActiveLetter(letter);
+			let filtered = data.filter(x => x.name.toLowerCase().startsWith(letter));
+			if  (filtered.length != 0) {
+				setData(filtered);
+				setFilterOn(true);
+			}
+		}
+	}
+
 	const indexOfLastPost = currentPage * dataPerPage;
 	const indexOfFirstPost = indexOfLastPost - dataPerPage;
 	const currentClients = data.slice(indexOfFirstPost, indexOfLastPost);
@@ -95,7 +111,7 @@ export const ClientsTabContent = () => {
 
 			{toggleNewItem && (<NewItemForm formType='client' handleToUpdate={refresh} />)}
 
-			<AlphabetPanel />
+			<AlphabetPanel active={activeLetter} disabled='k' alphabetSearch={searchByLetter}/>
 
 			{!dataLoaded && <LoadingComponent />}
 
