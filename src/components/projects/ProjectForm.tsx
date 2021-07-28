@@ -17,7 +17,7 @@ export const ProjectForm = (props: any) => {
     });
 
     useEffect(() => {
-        clientService.read()
+        clientService.readAll()
             .then(response => {
                 if (response.success) {
                     const clients = selectOptionService.getClients(response.data, true);

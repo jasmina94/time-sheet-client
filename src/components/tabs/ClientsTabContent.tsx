@@ -1,7 +1,7 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import '../../assets/css/Styles.css';
 import { NewItemForm } from '../forms/NewItemForm';
-import { Pagination } from '../shared/Pagination';
+import { Pagination, PaginationDefaultCongif } from '../shared/Pagination';
 import { ClientDetailsList } from '../clients/ClientDetailsList';
 import { LoadingComponent } from '../shared/LoadingComponent';
 import { AlphabetPanel } from '../shared/AlphabetPanel';
@@ -10,57 +10,46 @@ import { clientService } from '../../services/api/clientService';
 import { Client } from '../../model/Model';
 
 export const ClientsTabContent = () => {
-	const [currentPage, setCurrentPage] = useState(1);
-  	const [dataPerPage] = useState(4);
-	const [data, setData] = useState(clientService.clientsValue);
 	const [dataLoaded, setDataLoaded] = useState(false);
-	const [toggleNewItem, setToggleNewItem] = useState(false);
-	const [filterOn, setFilterOn] = useState(false);
 	const [activeLetter, setActiveLetter] = useState('');
+	const [toggleNewItem, setToggleNewItem] = useState(false);
+	const [data, setData] = useState(clientService.clientsValue);
+	const [currentPage, setCurrentPage] = useState(PaginationDefaultCongif.page);
+	const [dataPerPage, setDataPerPage] = useState(PaginationDefaultCongif.limit);
+	const [numOfPages, setNumOfPages] = useState(PaginationDefaultCongif.numOfPages);
 
-	const handleNewMember = (e: any) => {
-		e.preventDefault();
-		setToggleNewItem(!toggleNewItem);
-	}
+	useEffect(() => {
+		loadData();
+		console.log('clients: use effect');
+	}, [currentPage, dataPerPage]);
 
-	const refresh = () => {
-		clientService.read()
+	const loadData = () => {
+		clientService.read(currentPage, dataPerPage)
 			.then(response => {
 				if (response.success) {
 					setDataLoaded(true);
-					setData(response.data);
-					setToggleNewItem(false);
+					setData(response.data.clients);
+					setNumOfPages(response.data.numOfPages);
 				} else {
 					setDataLoaded(false);
 				}
 			});
-		clientService.clients.subscribe(x => setData(x));
+
+		if (toggleNewItem)
+			setToggleNewItem(!toggleNewItem);
 	}
 
-	useEffect(() => {
-		let isMounted = true;
-		clientService.read()
-			.then(response => {
-				if (isMounted) {
-					if (response.success) {
-						setDataLoaded(true);
-						setData(response.data);
-					} else {
-						setDataLoaded(false);
-					}
-				}
-			})
-		clientService.clients.subscribe(x => setData(x));
-		return () => { isMounted = false };
-	}, []);
+	const handleNewMember = (e: any) => {
+		setToggleNewItem(!toggleNewItem);
+	}	
 
 	const filterClient = (client: Client, term: string): boolean => {
 		let match = false;
 		term = term.toLocaleLowerCase();
 
-		if (client.name.toLowerCase().indexOf(term) !== -1 
+		if (client.name.toLowerCase().indexOf(term) !== -1
 			|| client.zip.toLowerCase().indexOf(term) !== -1
-			|| client.address.toLowerCase().indexOf(term) !== -1 
+			|| client.address.toLowerCase().indexOf(term) !== -1
 			|| client.city.toLowerCase().indexOf(term) !== -1
 			|| client.country.toLowerCase().indexOf(term) !== -1) {
 			match = true;
@@ -75,49 +64,50 @@ export const ClientsTabContent = () => {
 			let filteredData = data.filter(x => filterClient(x, term));
 			setData(filteredData);
 		} else {
-			refresh();
+			loadData();
 		}
 	}
 
 	const searchByLetter = (letter: string) => {
 		if (activeLetter === letter) {
 			setActiveLetter('');
-			refresh();
+			loadData();
 		} else {
 			setActiveLetter(letter);
 			let filtered = data.filter(x => x.name.toLowerCase().startsWith(letter));
-			if  (filtered.length != 0) {
+			if (filtered.length !== 0) {
 				setData(filtered);
-				setFilterOn(true);
 			}
 		}
 	}
-
-	const indexOfLastPost = currentPage * dataPerPage;
-	const indexOfFirstPost = indexOfLastPost - dataPerPage;
-	const currentClients = data.slice(indexOfFirstPost, indexOfLastPost);
 
 	const changePage = (pageNum: number) => {
 		setCurrentPage(pageNum);
 	}
 
+	const changeLimit = (dataPerPage: number) => {
+		setDataPerPage(dataPerPage);
+		setCurrentPage(PaginationDefaultCongif.page);
+	}
+
 	return (
-		<section className="content">
-			<h2><i className="ico clients"></i>Clients</h2>
-			<div className="grey-box-wrap reports">
-				<a href="#new-member" className="link new-member-popup" onClick={handleNewMember}>Create new client</a>
-				<SearchControl name="search-client" searchAction={searchClient}/>
+		<section className='content'>
+			<h2><i className='ico clients'></i>Clients</h2>
+			<div className='grey-box-wrap reports'>
+				<a href='#new-member' className='link new-member-popup' onClick={handleNewMember}>Create new client</a>
+				<SearchControl name='search-client' searchAction={searchClient} />
 			</div>
 
-			{toggleNewItem && (<NewItemForm formType='client' handleToUpdate={refresh} />)}
+			{toggleNewItem && (<NewItemForm formType='client' handleToUpdate={loadData} />)}
 
-			<AlphabetPanel active={activeLetter} disabled='k' alphabetSearch={searchByLetter}/>
+			<AlphabetPanel active={activeLetter} disabled='k' alphabetSearch={searchByLetter} />
 
 			{!dataLoaded && <LoadingComponent />}
 
-			{dataLoaded && <ClientDetailsList clients={currentClients} handleToUpdate={refresh} />}
+			{dataLoaded && <ClientDetailsList clients={data} handleToUpdate={loadData} />}
 
-			<Pagination activePage={currentPage} perPage={dataPerPage} total={data.length} paginate={changePage} />
+			<Pagination activePage={currentPage} perPage={dataPerPage}
+				total={numOfPages} paginate={changePage} changeLimit={changeLimit} />
 
 		</section>
 	);

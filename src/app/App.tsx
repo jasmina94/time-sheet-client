@@ -4,9 +4,7 @@ import { Route, Router, Switch } from 'react-router-dom';
 import { tokenHelper } from '../helpers/tokenHelper';
 import { PrivateRoute } from '../components/shared/PrivateRoute';
 import { authenticationService } from '../services/api/authenticationService';
-import HomePage from '../pages/home/HomePage';
-import LoginPage from '../pages/login/LoginPage';
-import ForgotPasswordPage from '../pages/forgotPassword/ForgotPasswordPage';
+import { HomePage, LoginPage, ForgotPasswordPage } from '../pages/index';
 import { UserSessionInfo } from '../model/Model';
 
 export const history = createBrowserHistory();

@@ -3,7 +3,7 @@ import '../../assets/css/Styles.css';
 import { useState, useEffect } from 'react';
 import { projectService } from '../../services/api/projectService';
 import { NewItemForm } from '../forms/NewItemForm';
-import { Pagination } from '../shared/Pagination';
+import { Pagination, PaginationDefaultCongif } from '../shared/Pagination';
 import { AlphabetPanel } from '../shared/AlphabetPanel';
 import { LoadingComponent } from '../shared/LoadingComponent';
 import { ProjectDetailsList } from '../projects/ProjectDetailsList';
@@ -11,50 +11,39 @@ import { Project } from '../../model/Model';
 import { SearchControl } from '../shared/SearchControl';
 
 export const ProjectsTabContent = () => {
-	const [currentPage, setCurrentPage] = useState(1);
-	const [dataPerPage] = useState(2);
-	const [data, setData] = useState(projectService.projectsValue);
 	const [dataLoaded, setDataLoaded] = useState(false);
-	const [toggleNewItem, setToggleNewItem] = useState(false);
 	const [activeLetter, setActiveLetter] = useState('');
+	const [toggleNewItem, setToggleNewItem] = useState(false);
+	const [data, setData] = useState(projectService.projectsValue);
+	const [currentPage, setCurrentPage] = useState(PaginationDefaultCongif.page);
+	const [dataPerPage, setDataPerPage] = useState(PaginationDefaultCongif.limit);
+	const [numOfPages, setNumOfPages] = useState(PaginationDefaultCongif.numOfPages);
+
 
 	useEffect(() => {
-		let isMounted = true;
-		projectService.read()
-			.then(response => {
-				if (isMounted) {
-					if (response.success) {
-						setDataLoaded(true);
-						setData(response.data);
-					} else {
-						setDataLoaded(false);
-					}
-				}
-			})
+		loadData();
+		console.log('project tab: use effect');
+	}, [currentPage, dataPerPage])
 
-		projectService.projects.subscribe(x => setData(x));
-
-		return () => { isMounted = false };
-	}, [])
-
-	const handleNewMember = (e: any) => {
-		setToggleNewItem(!toggleNewItem);
-	}
-
-	const refresh = () => {
-		projectService.read()
+	const loadData = () => {
+		projectService.read(currentPage, dataPerPage)
 			.then(response => {
 				if (response.success) {
 					setDataLoaded(true);
-					setData(response.data);
-					setToggleNewItem(false);
+					setData(response.data.projects);
+					setNumOfPages(response.data.numOfPages);
 				} else {
 					setDataLoaded(false);
 				}
 			});
-		projectService.projects.subscribe(x => setData(x));
+		
+		if (toggleNewItem)
+			setToggleNewItem(!toggleNewItem);
 	}
 
+	const handleNewMember = (e: any) => {
+		setToggleNewItem(!toggleNewItem);
+	}
 
 	const filterClient = (project: Project, term: string): boolean => {
 		let match = false;
@@ -74,48 +63,49 @@ export const ProjectsTabContent = () => {
 			let filteredData = data.filter(x => filterClient(x, term));
 			setData(filteredData);
 		} else {
-			refresh();
+			loadData();
 		}
 	}
 
 	const searchByLetter = (letter: string) => {
 		if (activeLetter === letter) {
 			setActiveLetter('');
-			refresh();
+			loadData();
 		} else {
 			setActiveLetter(letter);
 			let filtered = data.filter(x => x.name.toLowerCase().startsWith(letter));
-			if (filtered.length != 0) {
+			if (filtered.length !== 0) {
 				setData(filtered);
 			}
 		}
 	}
 
-	const indexOfLastPost = currentPage * dataPerPage;
-	const indexOfFirstPost = indexOfLastPost - dataPerPage;
-	const currentProjects = data.slice(indexOfFirstPost, indexOfLastPost);
-
 	const changePage = (pageNum: number) => {
 		setCurrentPage(pageNum);
 	}
 
+	const changeLimit = (dataPerPage: number) => {
+		setDataPerPage(dataPerPage);
+		setCurrentPage(PaginationDefaultCongif.page);
+	}
+
 	return (
-		<section className="content">
-			<h2><i className="ico projects"></i>Projects</h2>
-			<div className="grey-box-wrap reports">
-				<a href="#new-member" className="link new-member-popup" onClick={handleNewMember}>Create new project</a>
-				<SearchControl name="search-project" searchAction={searchProject} />
+		<section className='content'>
+			<h2><i className='ico projects'></i>Projects</h2>
+			<div className='grey-box-wrap reports'>
+				<a href='#new-member' className='link new-member-popup' onClick={handleNewMember}>Create new project</a>
+				<SearchControl name='search-project' searchAction={searchProject} />
 			</div>
-			{toggleNewItem && (<NewItemForm formType='project' handleToUpdate={refresh} />)}
+			{toggleNewItem && (<NewItemForm formType='project' handleToUpdate={loadData} />)}
 
 			<AlphabetPanel disabled='a' alphabetSearch={searchByLetter} />
 
 			{!dataLoaded && <LoadingComponent />}
 
-			{dataLoaded && <ProjectDetailsList projects={currentProjects} handleToUpdate={refresh} />}
+			{dataLoaded && <ProjectDetailsList projects={data} handleToUpdate={loadData} />}
 
-			<Pagination activePage={currentPage} perPage={dataPerPage} total={data.length} paginate={changePage} />
-
+			<Pagination activePage={currentPage} perPage={dataPerPage} 
+				total={numOfPages} paginate={changePage} changeLimit={changeLimit}/>
 		</section>
 	);
 }

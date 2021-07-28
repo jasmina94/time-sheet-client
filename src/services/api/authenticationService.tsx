@@ -1,12 +1,9 @@
-import { BehaviorSubject } from "rxjs";
-import { handleResponse } from '../api/ResponseHandler';
+import { BehaviorSubject } from 'rxjs';
+import { handleResponse } from '../../helpers/responseHandler';
 import { ApiResponse } from '../../model/Model';
-const { REACT_APP_SERVER_PATH } = process.env;
-const { REACT_APP_SERVER_PORT } = process.env;
 const { REACT_APP_LOGIN_PATH } = process.env;
 
-const LOGIN_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT + REACT_APP_LOGIN_PATH;
-
+const LOGIN_PATH = REACT_APP_LOGIN_PATH ?? 'http//localhost:8000/login';
 const tokenSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('token') || 'null'));
 
 export const authenticationService = {

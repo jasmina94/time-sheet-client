@@ -1,17 +1,15 @@
-import { BehaviorSubject } from "rxjs";
-import { tokenHelper } from "../../helpers/tokenHelper"
-import { handleResponse } from "../api/ResponseHandler";
-import { Client } from "../../model/Model";
-const { REACT_APP_SERVER_PATH } = process.env;
-const { REACT_APP_SERVER_PORT } = process.env;
+import { BehaviorSubject } from 'rxjs';
+import { tokenHelper } from '../../helpers/tokenHelper'
+import { handleResponse } from '../../helpers/responseHandler';
+import { ApiResponse, Client } from '../../model/Model';
 const { REACT_APP_CLIENTS_PATH } = process.env;
 
-const SERVER_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT;
-const CLIENTS_PATH = SERVER_PATH + '' + REACT_APP_CLIENTS_PATH;
+const CLIENTS_PATH = REACT_APP_CLIENTS_PATH ?? 'http//localhost:8000/clients';
 
 const clientsSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('clients') || 'null'));
 
 export const clientService = {
+    readAll,
     read,
     create,
     update,
@@ -20,9 +18,9 @@ export const clientService = {
     get clientsValue(): Client[] { return clientsSubject.value },
 };
 
-function read() {
+function readAll() {
     const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
-    return fetch(CLIENTS_PATH, requestOptions)
+    return fetch(CLIENTS_PATH + '/all', requestOptions)
         .then(handleResponse)
         .then(response => {
             let data = response.data;
@@ -36,12 +34,38 @@ function read() {
         })
 }
 
+function read(page: number, perPage: number) {
+    let result: ApiResponse;
+    const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
+    const path = CLIENTS_PATH + '?page=' + page + '&limit=' + perPage;
+
+    return fetch(path, requestOptions)
+        .then(handleResponse)
+        .then(response => {
+            let clients = response.clients;
+            let numOfPages = response.numOfPages;
+
+            localStorage.setItem('clients', JSON.stringify(clients));
+            clientsSubject.next(clients);
+
+            result = { success: true, data: { clients, numOfPages }, error: '' };
+
+            return result;
+        })
+        .catch(error => {
+            result = { success: false, data: {}, error: error };
+
+            return result;
+        })
+}
+
 function create(client: Client) {
     const requestOptions: any = {
         method: 'POST',
         headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
     };
+
     return fetch(CLIENTS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
@@ -58,6 +82,7 @@ function update(client: Client) {
         headers: { ...tokenHelper.getAuthHeader(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: client.name, address: client.address, city: client.city, zip: client.zip, country: client.country })
     };
+
     return fetch(CLIENTS_PATH + '/' + client.id, requestOptions)
         .then(handleResponse)
         .then(response => {
@@ -68,13 +93,16 @@ function update(client: Client) {
         })
 }
 
-function remove(id: number) {
+function remove(clientId: number) {
     let requestOptions: any = { method: 'DELETE', headers: tokenHelper.getAuthHeader() };
-    return fetch(CLIENTS_PATH + '/' + id, requestOptions)
+
+    return fetch(CLIENTS_PATH + '/' + clientId, requestOptions)
         .then(handleResponse)
         .then(response => {
             let data = response.data;
+
             localStorage.setItem('clients', JSON.stringify(data));
+
             clientsSubject.next(data);
 
             return { success: true, data: data, error: '' };

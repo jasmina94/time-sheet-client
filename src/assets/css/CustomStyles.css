@@ -17,3 +17,10 @@
 .active-page {
     background-color: lightblue;
 }
+
+.pagination-select {
+    margin-left: 0.25rem;
+    border-radius: 0;
+    height: 20px;
+    padding: 2px;
+}

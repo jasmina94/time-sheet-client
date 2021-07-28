@@ -1,15 +1,12 @@
 import { User } from "../../model/Model";
 import { tokenHelper } from "../../helpers/tokenHelper";
-import { handleResponse } from "../api/ResponseHandler";
+import { handleResponse } from "../../helpers/responseHandler";
 import { conversionService } from "../conversionService";
-const { REACT_APP_SERVER_PATH } = process.env;
-const { REACT_APP_SERVER_PORT } = process.env;
-const { REACT_APP_GET_USERS_PATH } = process.env;
+const { REACT_APP_USERS_PATH } = process.env;
 const { REACT_APP_RESET_PASSWORD_PATH } = process.env;
 
-const SERVER_PATH = REACT_APP_SERVER_PATH + ':' + REACT_APP_SERVER_PORT;
-const GET_ALL_USERS_PATH = SERVER_PATH + '' + REACT_APP_GET_USERS_PATH;
-const RESET_PASSWORD_PATH = SERVER_PATH + '' + REACT_APP_RESET_PASSWORD_PATH;
+const USERS_PATH = REACT_APP_USERS_PATH ?? 'http://localhost:8000/users';
+const RESET_PASSWORD_PATH = REACT_APP_RESET_PASSWORD_PATH ?? 'http://localhost:8000/password';
 
 export const userService = {
     getAll,
@@ -18,7 +15,7 @@ export const userService = {
 
 function getAll() {
     const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
-    return fetch(GET_ALL_USERS_PATH, requestOptions)
+    return fetch(USERS_PATH, requestOptions)
         .then(handleResponse)
         .then(response => {
             let users: User[] = [];

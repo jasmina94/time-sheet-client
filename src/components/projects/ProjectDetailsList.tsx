@@ -10,7 +10,7 @@ export const ProjectDetailsList = (props: any) => {
     const [customerOptions, setCustomerOptions] = useState([]);
     
     useEffect(() => {
-        clientService.read()
+        clientService.readAll()
             .then(response => {
                 if (response.success) {
                     const clients = selectOptionService.getClients(response.data);
