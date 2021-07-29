@@ -13,7 +13,7 @@ export const ClientsTabContent = () => {
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [activeLetter, setActiveLetter] = useState('');
 	const [toggleNewItem, setToggleNewItem] = useState(false);
-	const [data, setData] = useState(clientService.clientsValue);
+	const [data, setData] = useState(clientService.clientsValue ?? []);
 	const [currentPage, setCurrentPage] = useState(PaginationDefaultCongif.page);
 	const [dataPerPage, setDataPerPage] = useState(PaginationDefaultCongif.limit);
 	const [numOfPages, setNumOfPages] = useState(PaginationDefaultCongif.numOfPages);
