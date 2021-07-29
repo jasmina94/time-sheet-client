@@ -7,7 +7,6 @@ import { Pagination, PaginationDefaultCongif } from '../shared/Pagination';
 import { AlphabetPanel } from '../shared/AlphabetPanel';
 import { LoadingComponent } from '../shared/LoadingComponent';
 import { ProjectDetailsList } from '../projects/ProjectDetailsList';
-import { Project } from '../../model/Model';
 import { SearchControl } from '../shared/SearchControl';
 
 export const ProjectsTabContent = () => {
@@ -22,7 +21,6 @@ export const ProjectsTabContent = () => {
 
 	useEffect(() => {
 		loadData();
-		console.log('project tab: use effect');
 	}, [currentPage, dataPerPage])
 
 	const loadData = () => {
@@ -36,7 +34,7 @@ export const ProjectsTabContent = () => {
 					setDataLoaded(false);
 				}
 			});
-		
+
 		if (toggleNewItem)
 			setToggleNewItem(!toggleNewItem);
 	}
@@ -45,26 +43,15 @@ export const ProjectsTabContent = () => {
 		setToggleNewItem(!toggleNewItem);
 	}
 
-	const filterClient = (project: Project, term: string): boolean => {
-		let match = false;
-		term = term.toLocaleLowerCase();
-
-		if (project.name.toLowerCase().indexOf(term) !== -1
-			|| project.description.toLocaleLowerCase().indexOf(term) !== -1) {
-			match = true;
-		}
-
-		return match;
+	const searchCallback = (data: any) => {
+		setDataLoaded(true);
+		setData(data.entities);
+		setNumOfPages(data.numOfPages);
 	}
 
-	const searchProject = (e: any) => {
-		const term = e.target.value;
-		if (term !== '' && term !== undefined) {
-			let filteredData = data.filter(x => filterClient(x, term));
-			setData(filteredData);
-		} else {
-			loadData();
-		}
+	const searchInProgress = () => {
+		console.log('in progress');
+		setDataLoaded(false);
 	}
 
 	const searchByLetter = (letter: string) => {
@@ -94,18 +81,24 @@ export const ProjectsTabContent = () => {
 			<h2><i className='ico projects'></i>Projects</h2>
 			<div className='grey-box-wrap reports'>
 				<a href='#new-member' className='link new-member-popup' onClick={handleNewMember}>Create new project</a>
-				<SearchControl name='search-project' searchAction={searchProject} />
+				<SearchControl name='search-project' type='projects'
+					searchReset={loadData}
+					searchSuccess={searchCallback}
+					searchInProgress={searchInProgress} />
 			</div>
+
 			{toggleNewItem && (<NewItemForm formType='project' handleToUpdate={loadData} />)}
 
 			<AlphabetPanel disabled='a' alphabetSearch={searchByLetter} />
 
-			{!dataLoaded && <LoadingComponent />}
-
-			{dataLoaded && <ProjectDetailsList projects={data} handleToUpdate={loadData} />}
-
-			<Pagination activePage={currentPage} perPage={dataPerPage} 
-				total={numOfPages} paginate={changePage} changeLimit={changeLimit}/>
+			{dataLoaded
+				?	<>
+						<ProjectDetailsList projects={data} handleToUpdate={loadData} />
+						<Pagination activePage={currentPage} noResults={data.length === 0}
+							perPage={dataPerPage} total={numOfPages}
+							paginate={changePage} changeLimit={changeLimit} />
+					</>
+				:	<LoadingComponent />}
 		</section>
 	);
 }

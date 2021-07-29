@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
-import { clientService } from "../../services/api/clientService";
-import countryList from "react-select-country-list";
+import { useState, useMemo } from 'react';
+import { clientService } from '../../services/api/clientService';
+import countryList from 'react-select-country-list';
 
 export const ClientDetails = (props: any) => {
     const  countries = useMemo(() => countryList().getData(), []);
@@ -58,47 +58,47 @@ export const ClientDetails = (props: any) => {
     }
 
     return (
-        <div className="item">
-            <div className="heading" onClick={toggleDetails}>
+        <div className='item'>
+            <div className='heading' onClick={toggleDetails}>
                 <span>{props.client.name}</span>
                 <i>+</i>
             </div>
             {state.showDetails && (
-                <div className="details">
-                    <ul className="form">
+                <div className='details'>
+                    <ul className='form'>
                         <li>
                             <label>Client name:</label>
-                            <input type="text" name="name" className="in-text" value={state.name} onChange={(e) => {setState({...state, name: e.target.value})}}/>
+                            <input type='text' name='name' className='in-text' value={state.name} onChange={(e) => {setState({...state, name: e.target.value})}}/>
                         </li>
                         <li>
                             <label>Zip/Postal code:</label>
-                            <input type="text" name="zip" className="in-text" value={state.zip} onChange={(e) => {setState({...state, zip: e.target.value})}}/>
+                            <input type='text' name='zip' className='in-text' value={state.zip} onChange={(e) => {setState({...state, zip: e.target.value})}}/>
                         </li>
                     </ul>
-                    <ul className="form">
+                    <ul className='form'>
                         <li>
                             <label>Address:</label>
-                            <input type="text" name="address" className="in-text" value={state.address} onChange={(e) => {setState({...state, address: e.target.value})}}/>
+                            <input type='text' name='address' className='in-text' value={state.address} onChange={(e) => {setState({...state, address: e.target.value})}}/>
                         </li>
                         <li>
                             <label>Country:</label>
-                            <select name="country" value={state.country} onChange={(e) => {setState({...state, country: e.target.value})}}>
+                            <select name='country' value={state.country} onChange={(e) => {setState({...state, country: e.target.value})}}>
                                 <option>Select country</option>
                                 {renderCountryOptions()}
                             </select>
                         </li>
                     </ul>
-                    <ul className="form last">
+                    <ul className='form last'>
                         <li>
                             <label>City:</label>
-                            <input type="text" name="city" className="in-text" value={state.city} onChange={(e) => {setState({...state, city: e.target.value})}}/>
+                            <input type='text' name='city' className='in-text' value={state.city} onChange={(e) => {setState({...state, city: e.target.value})}}/>
                         </li>
                     </ul>
-                    <label className="error-label">{state.error}</label>
-                    <div className="buttons">
-                        <div className="inner">
-                            <a href=" " className="btn green" onClick={saveClient}>Save</a>
-                            <a href=" " className="btn red" onClick={deleteClient}>Delete</a>
+                    <label className='error-label'>{state.error}</label>
+                    <div className='buttons'>
+                        <div className='inner'>
+                            <a href=' ' className='btn green' onClick={saveClient}>Save</a>
+                            <a href=' ' className='btn red' onClick={deleteClient}>Delete</a>
                         </div>
                     </div>
                 </div>

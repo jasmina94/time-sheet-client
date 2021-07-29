@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import '../../assets/css/Styles.css';
 import { NewItemForm } from '../forms/NewItemForm';
-import { Pagination, PaginationDefaultCongif } from '../shared/Pagination';
-import { ClientDetailsList } from '../clients/ClientDetailsList';
-import { LoadingComponent } from '../shared/LoadingComponent';
 import { AlphabetPanel } from '../shared/AlphabetPanel';
 import { SearchControl } from '../shared/SearchControl';
+import { LoadingComponent } from '../shared/LoadingComponent';
+import { ClientDetailsList } from '../clients/ClientDetailsList';
 import { clientService } from '../../services/api/clientService';
-import { Client } from '../../model/Model';
+import { Pagination, PaginationDefaultCongif } from '../shared/Pagination';
 
 export const ClientsTabContent = () => {
 	const [dataLoaded, setDataLoaded] = useState(false);
@@ -41,31 +40,17 @@ export const ClientsTabContent = () => {
 
 	const handleNewMember = (e: any) => {
 		setToggleNewItem(!toggleNewItem);
-	}	
-
-	const filterClient = (client: Client, term: string): boolean => {
-		let match = false;
-		term = term.toLocaleLowerCase();
-
-		if (client.name.toLowerCase().indexOf(term) !== -1
-			|| client.zip.toLowerCase().indexOf(term) !== -1
-			|| client.address.toLowerCase().indexOf(term) !== -1
-			|| client.city.toLowerCase().indexOf(term) !== -1
-			|| client.country.toLowerCase().indexOf(term) !== -1) {
-			match = true;
-		}
-
-		return match;
 	}
 
-	const searchClient = (e: any) => {
-		const term = e.target.value;
-		if (term !== '' && term !== undefined) {
-			let filteredData = data.filter(x => filterClient(x, term));
-			setData(filteredData);
-		} else {
-			loadData();
-		}
+	const searchCallback = (data: any) => {
+		setDataLoaded(true);
+		setData(data.entities);
+		setNumOfPages(data.numOfPages);
+	}
+
+	const searchInProgress = () => {
+		console.log('in progress');
+		setDataLoaded(false);
 	}
 
 	const searchByLetter = (letter: string) => {
@@ -93,22 +78,27 @@ export const ClientsTabContent = () => {
 	return (
 		<section className='content'>
 			<h2><i className='ico clients'></i>Clients</h2>
+
 			<div className='grey-box-wrap reports'>
 				<a href='#new-member' className='link new-member-popup' onClick={handleNewMember}>Create new client</a>
-				<SearchControl name='search-client' searchAction={searchClient} />
+				<SearchControl name='search-client' type='clients'
+					searchReset={loadData}
+					searchSuccess={searchCallback}
+					searchInProgress={searchInProgress} />
 			</div>
 
 			{toggleNewItem && (<NewItemForm formType='client' handleToUpdate={loadData} />)}
 
 			<AlphabetPanel active={activeLetter} disabled='k' alphabetSearch={searchByLetter} />
 
-			{!dataLoaded && <LoadingComponent />}
-
-			{dataLoaded && <ClientDetailsList clients={data} handleToUpdate={loadData} />}
-
-			<Pagination activePage={currentPage} perPage={dataPerPage}
-				total={numOfPages} paginate={changePage} changeLimit={changeLimit} />
-
+			{dataLoaded
+				? 	<>
+						<ClientDetailsList clients={data} handleToUpdate={loadData} />
+						<Pagination activePage={currentPage} noResults={data.length === 0}
+							perPage={dataPerPage} total={numOfPages} 
+							paginate={changePage} changeLimit={changeLimit} />
+					</>
+				:	<LoadingComponent />}
 		</section>
 	);
 }

@@ -29,6 +29,9 @@ export const Pagination = (props: any) => {
 					</li>
 				))}
 			</ul>
+			
+			{props.noResults && <p>No results</p>}
+
 			<select className='pagination-select' value={props.perPage} onChange={(e) => props.changeLimit(e.target.value)}>
 				{options.map((itemPerPage:number) => (
 					<option value={itemPerPage} key={itemPerPage}>{itemPerPage}</option>	
