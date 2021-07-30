@@ -17,10 +17,12 @@ function searchFor(searchType: string, searchTerm: string) {
     return fetch(path, requestOptions)
         .then(handleResponse)
         .then(response => {
-            const entities = response.entities;
-            const numOfPages = response.numOfPages;
-            
-            result = { success: true, data: { entities, numOfPages}, error: ''};
+            const data = {
+                entities: response.entities,
+                numOfPages: response.numOfPages
+            }            
+
+            result = { success: true, data: data, error: ''};
             
             return result;
         })

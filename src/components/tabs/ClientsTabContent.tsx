@@ -9,6 +9,7 @@ import { clientService } from '../../services/api/clientService';
 import { Pagination, PaginationDefaultCongif } from '../shared/Pagination';
 
 export const ClientsTabContent = () => {
+	const [searchTerm, setSearchTerm] = useState('');
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [activeLetter, setActiveLetter] = useState('');
 	const [toggleNewItem, setToggleNewItem] = useState(false);
@@ -19,12 +20,15 @@ export const ClientsTabContent = () => {
 
 	useEffect(() => {
 		loadData();
-		console.log('clients: use effect');
 	}, [currentPage, dataPerPage]);
 
 	const loadData = () => {
-		clientService.read(currentPage, dataPerPage)
-			.then(response => {
+		console.log(currentPage);
+		console.log(dataPerPage);
+		console.log(searchTerm);
+		
+		clientService.read(currentPage, dataPerPage, searchTerm)
+			.then(response => { 
 				if (response.success) {
 					setDataLoaded(true);
 					setData(response.data.clients);
@@ -32,24 +36,26 @@ export const ClientsTabContent = () => {
 				} else {
 					setDataLoaded(false);
 				}
-			});
+			})
 
 		if (toggleNewItem)
 			setToggleNewItem(!toggleNewItem);
 	}
 
-	const handleNewMember = (e: any) => {
-		setToggleNewItem(!toggleNewItem);
+	const searchReset = () => {
+		setSearchTerm('');
+		setCurrentPage(1);
+		setDataPerPage(3);
 	}
 
-	const searchCallback = (data: any) => {
+	const searchCallback = (data: any, searchTerm: string) => {
 		setDataLoaded(true);
 		setData(data.entities);
 		setNumOfPages(data.numOfPages);
+		setSearchTerm(searchTerm);
 	}
 
 	const searchInProgress = () => {
-		console.log('in progress');
 		setDataLoaded(false);
 	}
 
@@ -80,9 +86,9 @@ export const ClientsTabContent = () => {
 			<h2><i className='ico clients'></i>Clients</h2>
 
 			<div className='grey-box-wrap reports'>
-				<a href='#new-member' className='link new-member-popup' onClick={handleNewMember}>Create new client</a>
+				<a href='#new-member' className='link new-member-popup' onClick={() => setToggleNewItem(!toggleNewItem)}>Create new client</a>
 				<SearchControl name='search-client' type='clients'
-					searchReset={loadData}
+					searchReset={searchReset}
 					searchSuccess={searchCallback}
 					searchInProgress={searchInProgress} />
 			</div>
@@ -92,13 +98,13 @@ export const ClientsTabContent = () => {
 			<AlphabetPanel active={activeLetter} disabled='k' alphabetSearch={searchByLetter} />
 
 			{dataLoaded
-				? 	<>
-						<ClientDetailsList clients={data} handleToUpdate={loadData} />
-						<Pagination activePage={currentPage} noResults={data.length === 0}
-							perPage={dataPerPage} total={numOfPages} 
-							paginate={changePage} changeLimit={changeLimit} />
+				? <>
+					<ClientDetailsList clients={data} handleToUpdate={loadData} />
+					<Pagination activePage={currentPage} noResults={data.length === 0}
+						perPage={dataPerPage} total={numOfPages}
+						paginate={changePage} changeLimit={changeLimit} />
 					</>
-				:	<LoadingComponent />}
+				: <LoadingComponent />}
 		</section>
 	);
 }

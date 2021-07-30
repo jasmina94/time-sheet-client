@@ -6,19 +6,25 @@ export const SearchControl = (props: any) => {
 
     useEffect(() => {
         if (searchTerm) {
+
+            props.searchInProgress();
+
             const delay = setTimeout(() => {
                 searchService.searchFor(props.type, searchTerm)
                     .then(response => {
                         console.log(response.data);
                         if (response.success) {
-                            props.searchSuccess(response.data);
+                            console.log('success search for term: ' + searchTerm);
+                            props.searchSuccess(response.data, searchTerm);
                         } else {
                             console.log(response);
                         }
                     });
-            }, 5000);
+            }, 3000);
+
             return () => clearTimeout(delay);
         }
+
     }, [searchTerm]);
 
     const handleResetSearch = (e: any) => {

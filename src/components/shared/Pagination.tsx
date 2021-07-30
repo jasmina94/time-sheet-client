@@ -16,27 +16,28 @@ export const Pagination = (props: any) => {
 		e.preventDefault();
 		const page = e.target.id;
 		props.paginate(parseInt(page));
-	}	
+	}
 
 	return (
 		<div className='pagination'>
-			<ul>
-				{pageNumbers.map(number => (
-					<li key={number} className={number === props.activePage ? 'active-page' : ''}>
-						<a href='!#' onClick={handleChangePage} id={number.toString()}>
-							{number}
-						</a>
-					</li>
-				))}
-			</ul>
-			
-			{props.noResults && <p>No results</p>}
-
-			<select className='pagination-select' value={props.perPage} onChange={(e) => props.changeLimit(e.target.value)}>
-				{options.map((itemPerPage:number) => (
-					<option value={itemPerPage} key={itemPerPage}>{itemPerPage}</option>	
-				))}				
-			</select>
+			{props.noResults
+				? <p>No results</p>
+				: <>
+					<ul>
+						{pageNumbers.map(number => (
+							<li key={number} className={number === props.activePage ? 'active-page' : ''}>
+								<a href='!#' onClick={handleChangePage} id={number.toString()}>
+									{number}
+								</a>
+							</li>
+						))}
+					</ul>
+					<select className='pagination-select' value={props.perPage} onChange={(e) => props.changeLimit(e.target.value)}>
+						{options.map((itemPerPage: number) => (
+							<option value={itemPerPage} key={itemPerPage}>{itemPerPage}</option>
+						))}
+					</select>
+				</>}
 		</div>
 	)
 }

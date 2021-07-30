@@ -68,7 +68,7 @@ export const HomePage = (props: any) => {
       <header>
         <div className='top-bar'></div>
         <div className='wrapper'>
-          <a href='!#' className='logo' onClick={() => history.push('/')}>
+          <a href=' ' className='logo' onClick={() => history.push('/')}>
             <img src='logo.png' alt='Emakina Timesheet' />
           </a>
           <ul className='user right'>

@@ -9,11 +9,11 @@ const CLIENTS_PATH = REACT_APP_CLIENTS_PATH ?? 'http//localhost:8000/clients';
 const clientsSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('clients') || 'null'));
 
 export const clientService = {
-    readAll,
     read,
     create,
     update,
     remove,
+    readAll,
     clients: clientsSubject.asObservable(),
     get clientsValue(): Client[] { return clientsSubject.value },
 };
@@ -34,10 +34,10 @@ function readAll() {
         })
 }
 
-function read(page: number, perPage: number) {
+function read(page: number, perPage: number, term: string = '') {
     let result: ApiResponse;
     const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
-    const path = CLIENTS_PATH + '?page=' + page + '&limit=' + perPage;
+    const path = getReadPath(page, perPage, term);
 
     return fetch(path, requestOptions)
         .then(handleResponse)
@@ -110,4 +110,10 @@ function remove(clientId: number) {
         .catch(error => {
             return { success: false, data: {}, error: error };
         })
+}
+
+function getReadPath(page: number, limit: number, searchTerm: string) {
+    let path = CLIENTS_PATH + '?page=' + page + '&limit=' + limit;
+    path += searchTerm ? '&term=' + searchTerm.trim() : '';
+    return path;
 }
