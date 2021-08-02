@@ -14,10 +14,10 @@ export const SearchControl = (props: any) => {
                     .then(response => {
                         console.log(response.data);
                         if (response.success) {
-                            console.log('success search for term: ' + searchTerm);
                             props.searchSuccess(response.data, searchTerm);
                         } else {
                             console.log(response);
+                            props.searchReset();
                         }
                     });
             }, 3000);

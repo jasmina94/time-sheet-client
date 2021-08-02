@@ -1,20 +1,46 @@
+import { useEffect, useState } from 'react';
+import { searchService } from '../../services/api/searchService';
+
 export const AlphabetPanel = (props: any) => {
+    const [searchLetter, setSearhLetter] = useState('');
+    const [active, setActive] = useState(props.active);
+    const [disabled, setDisabled] = useState(props.disabled);
     const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     const elements: any[] = [];
 
-    const handleClick = (e: any)  => {
+    useEffect(() => {
+        if (searchLetter) {
+            searchService.searchByLetter(props.page, props.perPage, props.type, searchLetter)
+                .then(response => {
+                    if (response.success) {
+                        props.searchSuccess(response.data, searchLetter);
+                        setActive(searchLetter);
+                    } else {
+                        props.searchReset();
+                    }
+                });
+        }
+    }, [searchLetter])
+
+    const handleClick = (e: any) => {
         e.preventDefault();
-        const searchLetter = e.target.closest('a').getAttribute('href');
-        if (props.disabled !== searchLetter) {
-            props.alphabetSearch(searchLetter);
+        const letter = e.target.closest('a').getAttribute('href');
+        if (props.disabled !== letter) {
+            if (searchLetter !== letter) {
+                setSearhLetter(letter);
+            } else {
+                setActive('');
+                setSearhLetter('');
+                props.searchReset();
+            }
         }
     }
 
     alphabet.forEach((item: string) => {
         let attr = '';
-        if (props.active !== '' && item === props.active) {
+        if (active !== '' && active === item) {
             attr = 'active';
-        } else if (props.disabled !== '' && item === props.disabled) {
+        } else if (disabled !== '' && disabled === item) {
             attr = 'disabled';
         }
         if (item === 'z') {
@@ -26,9 +52,9 @@ export const AlphabetPanel = (props: any) => {
             </li>
         );
     });
-    
+
     return (
-        <div className="alpha">
+        <div className='alpha'>
             <ul>
                 {elements}
             </ul>

@@ -7,6 +7,7 @@ import { LoadingComponent } from '../shared/LoadingComponent';
 import { ClientDetailsList } from '../clients/ClientDetailsList';
 import { clientService } from '../../services/api/clientService';
 import { Pagination, PaginationDefaultCongif } from '../shared/Pagination';
+import { searchService } from '../../services/api/searchService';
 
 export const ClientsTabContent = () => {
 	const [searchTerm, setSearchTerm] = useState('');
@@ -20,23 +21,32 @@ export const ClientsTabContent = () => {
 
 	useEffect(() => {
 		loadData();
-	}, [currentPage, dataPerPage]);
+	}, [currentPage, dataPerPage, activeLetter, searchTerm]);
 
 	const loadData = () => {
-		console.log(currentPage);
-		console.log(dataPerPage);
-		console.log(searchTerm);
-		
-		clientService.read(currentPage, dataPerPage, searchTerm)
-			.then(response => { 
-				if (response.success) {
-					setDataLoaded(true);
-					setData(response.data.clients);
-					setNumOfPages(response.data.numOfPages);
-				} else {
-					setDataLoaded(false);
-				}
-			})
+		if (activeLetter) {
+			searchService.searchByLetter(currentPage, dataPerPage, 'clients', activeLetter)
+                .then(response => {
+                    if (response.success) {
+                        setDataLoaded(true);
+						setData(response.data.entities);
+						setNumOfPages(response.data.numOfPages);
+                    } else {
+                        setDataLoaded(false);
+                    }
+                });
+		} else {
+			clientService.read(currentPage, dataPerPage, searchTerm)
+				.then(response => {
+					if (response.success) {
+						setDataLoaded(true);
+						setData(response.data.clients);
+						setNumOfPages(response.data.numOfPages);
+					} else {
+						setDataLoaded(false);
+					}
+				});
+		}
 
 		if (toggleNewItem)
 			setToggleNewItem(!toggleNewItem);
@@ -48,6 +58,12 @@ export const ClientsTabContent = () => {
 		setDataPerPage(3);
 	}
 
+	const searchLetterReset = () => {
+		setActiveLetter('');
+		setCurrentPage(1);
+		setDataPerPage(3);
+	}
+
 	const searchCallback = (data: any, searchTerm: string) => {
 		setDataLoaded(true);
 		setData(data.entities);
@@ -55,21 +71,16 @@ export const ClientsTabContent = () => {
 		setSearchTerm(searchTerm);
 	}
 
-	const searchInProgress = () => {
-		setDataLoaded(false);
+	const searchByTermInProgress = () => {
+		setActiveLetter('');
+		setDataLoaded(false)
 	}
 
-	const searchByLetter = (letter: string) => {
-		if (activeLetter === letter) {
-			setActiveLetter('');
-			loadData();
-		} else {
-			setActiveLetter(letter);
-			let filtered = data.filter(x => x.name.toLowerCase().startsWith(letter));
-			if (filtered.length !== 0) {
-				setData(filtered);
-			}
-		}
+	const searchLetterCallback = (data: any, letter: string) => {
+		setDataLoaded(true);
+		setData(data.entities);
+		setNumOfPages(data.numOfPages);
+		setActiveLetter(letter);
 	}
 
 	const changePage = (pageNum: number) => {
@@ -90,12 +101,16 @@ export const ClientsTabContent = () => {
 				<SearchControl name='search-client' type='clients'
 					searchReset={searchReset}
 					searchSuccess={searchCallback}
-					searchInProgress={searchInProgress} />
+					searchInProgress={searchByTermInProgress} />
 			</div>
 
 			{toggleNewItem && (<NewItemForm formType='client' handleToUpdate={loadData} />)}
 
-			<AlphabetPanel active={activeLetter} disabled='k' alphabetSearch={searchByLetter} />
+			<AlphabetPanel active={activeLetter} disabled='k' type='clients' 
+				page={currentPage} perPage={dataPerPage}
+				searchInProgress={() => setDataLoaded(false)}
+				searchSuccess={searchLetterCallback}
+				searchReset={searchLetterReset} />
 
 			{dataLoaded
 				? <>
@@ -103,7 +118,7 @@ export const ClientsTabContent = () => {
 					<Pagination activePage={currentPage} noResults={data.length === 0}
 						perPage={dataPerPage} total={numOfPages}
 						paginate={changePage} changeLimit={changeLimit} />
-					</>
+				</>
 				: <LoadingComponent />}
 		</section>
 	);
