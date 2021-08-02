@@ -24,3 +24,13 @@
     height: 20px;
     padding: 2px;
 }
+
+.disabled-page-link {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.disabled-page-link a {
+    color: gray !important;
+}

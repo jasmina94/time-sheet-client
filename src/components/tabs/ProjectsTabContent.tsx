@@ -1,5 +1,4 @@
 import '../../assets/css/Styles.css';
-import '../../assets/css/Styles.css';
 import { useState, useEffect } from 'react';
 import { projectService } from '../../services/api/projectService';
 import { NewItemForm } from '../forms/NewItemForm';
@@ -8,8 +7,10 @@ import { AlphabetPanel } from '../shared/AlphabetPanel';
 import { LoadingComponent } from '../shared/LoadingComponent';
 import { ProjectDetailsList } from '../projects/ProjectDetailsList';
 import { SearchControl } from '../shared/SearchControl';
+import { searchService } from '../../services/api/searchService';
 
 export const ProjectsTabContent = () => {
+	const [searchTerm, setSearchTerm] = useState('');
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [activeLetter, setActiveLetter] = useState('');
 	const [toggleNewItem, setToggleNewItem] = useState(false);
@@ -21,50 +22,66 @@ export const ProjectsTabContent = () => {
 
 	useEffect(() => {
 		loadData();
-	}, [currentPage, dataPerPage])
+	}, [currentPage, dataPerPage, activeLetter, searchTerm])
 
 	const loadData = () => {
-		projectService.read(currentPage, dataPerPage)
-			.then(response => {
-				if (response.success) {
-					setDataLoaded(true);
-					setData(response.data.projects);
-					setNumOfPages(response.data.numOfPages);
-				} else {
-					setDataLoaded(false);
-				}
-			});
+		if (activeLetter) {
+			searchService.searchByLetter(currentPage, dataPerPage, 'projects', activeLetter)
+				.then(response => {
+					if (response.success) {
+						setDataLoaded(true);
+						setData(response.data.entities);
+						setNumOfPages(response.data.numOfPages);
+					} else {
+						setDataLoaded(false);
+					}
+				});
+		} else {
+			projectService.read(currentPage, dataPerPage)
+				.then(response => {
+					if (response.success) {
+						setDataLoaded(true);
+						setData(response.data.projects);
+						setNumOfPages(response.data.numOfPages);
+					} else {
+						setDataLoaded(false);
+					}
+				});
+		}
 
 		if (toggleNewItem)
 			setToggleNewItem(!toggleNewItem);
 	}
 
-	const handleNewMember = (e: any) => {
-		setToggleNewItem(!toggleNewItem);
+	const searchReset = () => {
+		setSearchTerm('');
+		setCurrentPage(1);
+		setDataPerPage(3);
+	}
+
+	const searchLetterReset = () => {
+		setActiveLetter('');
+		setCurrentPage(1);
+		setDataPerPage(3);
 	}
 
 	const searchCallback = (data: any) => {
 		setDataLoaded(true);
 		setData(data.entities);
 		setNumOfPages(data.numOfPages);
+		setSearchTerm(searchTerm);
 	}
 
-	const searchInProgress = () => {
-		console.log('in progress');
-		setDataLoaded(false);
+	const searchByTermInProgress = () => {
+		setActiveLetter('');
+		setDataLoaded(false)
 	}
 
-	const searchByLetter = (letter: string) => {
-		if (activeLetter === letter) {
-			setActiveLetter('');
-			loadData();
-		} else {
-			setActiveLetter(letter);
-			let filtered = data.filter(x => x.name.toLowerCase().startsWith(letter));
-			if (filtered.length !== 0) {
-				setData(filtered);
-			}
-		}
+	const searchLetterCallback = (data: any, letter: string) => {
+		setDataLoaded(true);
+		setData(data.entities);
+		setNumOfPages(data.numOfPages);
+		setActiveLetter(letter);
 	}
 
 	const changePage = (pageNum: number) => {
@@ -80,25 +97,29 @@ export const ProjectsTabContent = () => {
 		<section className='content'>
 			<h2><i className='ico projects'></i>Projects</h2>
 			<div className='grey-box-wrap reports'>
-				<a href='#new-member' className='link new-member-popup' onClick={handleNewMember}>Create new project</a>
+				<a href='#new-member' className='link new-member-popup' onClick={() => setToggleNewItem(!toggleNewItem)}>Create new project</a>
 				<SearchControl name='search-project' type='projects'
-					searchReset={loadData}
+					searchReset={searchReset}
 					searchSuccess={searchCallback}
-					searchInProgress={searchInProgress} />
+					searchInProgress={searchByTermInProgress} />
 			</div>
 
 			{toggleNewItem && (<NewItemForm formType='project' handleToUpdate={loadData} />)}
 
-			<AlphabetPanel disabled='a' alphabetSearch={searchByLetter} />
+			<AlphabetPanel active={activeLetter} type='projects' 
+				page={currentPage} perPage={dataPerPage}
+				searchInProgress={() => setDataLoaded(false)}
+				searchSuccess={searchLetterCallback}
+				searchReset={searchLetterReset} />
 
 			{dataLoaded
-				?	<>
-						<ProjectDetailsList projects={data} handleToUpdate={loadData} />
-						<Pagination activePage={currentPage} noResults={data.length === 0}
-							perPage={dataPerPage} total={numOfPages}
-							paginate={changePage} changeLimit={changeLimit} />
-					</>
-				:	<LoadingComponent />}
+				? <>
+					<ProjectDetailsList projects={data} handleToUpdate={loadData} />
+					<Pagination activePage={currentPage} noResults={data.length === 0}
+						perPage={dataPerPage} total={numOfPages}
+						paginate={changePage} changeLimit={changeLimit} />
+				</>
+				: <LoadingComponent />}
 		</section>
 	);
 }

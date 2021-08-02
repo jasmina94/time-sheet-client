@@ -89,7 +89,7 @@ export const ClientsTabContent = () => {
 
 	const changeLimit = (dataPerPage: number) => {
 		setDataPerPage(dataPerPage);
-		setCurrentPage(PaginationDefaultCongif.page);
+		setCurrentPage(1);
 	}
 
 	return (
