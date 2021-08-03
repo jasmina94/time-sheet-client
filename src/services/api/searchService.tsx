@@ -44,7 +44,8 @@ function searchByLetter(page:number, perPage: number, searchType: string, letter
         .then(response => {
             const data = {
                 entities: response.entities,
-                numOfPages: response.numOfPages
+                numOfPages: response.numOfPages,
+                total: response.total
             }            
 
             result = { success: true, data: data, error: ''};

@@ -1,30 +1,19 @@
 import { useEffect, useState } from 'react';
-import { searchService } from '../../services/api/searchService';
 
 export const SearchControl = (props: any) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         if (searchTerm) {
-
             props.searchInProgress();
+            if (searchTerm.length > 1) {
+                const delay = setTimeout(() => {
+                    props.search(searchTerm);
+                }, 3000);
 
-            const delay = setTimeout(() => {
-                searchService.searchFor(props.type, searchTerm)
-                    .then(response => {
-                        console.log(response.data);
-                        if (response.success) {
-                            props.searchSuccess(response.data, searchTerm);
-                        } else {
-                            console.log(response);
-                            props.searchReset();
-                        }
-                    });
-            }, 3000);
-
-            return () => clearTimeout(delay);
+                return () => clearTimeout(delay);
+            }
         }
-
     }, [searchTerm]);
 
     const handleResetSearch = (e: any) => {

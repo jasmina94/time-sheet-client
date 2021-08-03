@@ -2,6 +2,7 @@ import { BehaviorSubject } from 'rxjs';
 import { tokenHelper } from '../../helpers/tokenHelper';
 import { ApiResponse, Project } from '../../model/Model';
 import { handleResponse } from '../../helpers/responseHandler';
+import { getReadPath } from '../../helpers/searchPathHelper';
 const { REACT_APP_PROJECTS_PATH } = process.env;
 
 const PROJECTS_PATH = REACT_APP_PROJECTS_PATH ?? 'http//localhost:8000/projects';
@@ -34,21 +35,22 @@ function readAll() {
         })
 }
 
-function read(page: number, perPage: number) {
+function read(page: number, perPage: number, term: string = '') {
     let result: ApiResponse;
     const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
-    const path = PROJECTS_PATH + '?page=' + page + '&limit=' + perPage;
+    const path = getReadPath('projects', page, perPage, term);
 
     return fetch(path, requestOptions)
         .then(handleResponse)
         .then(response => {
             let projects = response.projects;
             let numOfPages = response.numOfPages;
+            let total = response.total;
 
             localStorage.setItem('projects', JSON.stringify(projects));
             projectsSubject.next(projects);
 
-            result = { success: true, data: { projects, numOfPages }, error: '' };
+            result = { success: true, data: { projects, numOfPages, total }, error: '' };
 
             return result;
         })

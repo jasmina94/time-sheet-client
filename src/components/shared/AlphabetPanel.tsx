@@ -1,26 +1,9 @@
-import { useEffect, useState } from 'react';
-import { searchService } from '../../services/api/searchService';
+import { useState } from 'react';
 
 export const AlphabetPanel = (props: any) => {
     const [searchLetter, setSearhLetter] = useState('');
-    const [active, setActive] = useState(props.active);
-    const [disabled, setDisabled] = useState(props.disabled);
     const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     const elements: any[] = [];
-
-    useEffect(() => {
-        if (searchLetter) {
-            searchService.searchByLetter(props.page, props.perPage, props.type, searchLetter)
-                .then(response => {
-                    if (response.success) {
-                        props.searchSuccess(response.data, searchLetter);
-                        setActive(searchLetter);
-                    } else {
-                        props.searchReset();
-                    }
-                });
-        }
-    }, [searchLetter])
 
     const handleClick = (e: any) => {
         e.preventDefault();
@@ -28,8 +11,8 @@ export const AlphabetPanel = (props: any) => {
         if (props.disabled !== letter) {
             if (searchLetter !== letter) {
                 setSearhLetter(letter);
+                props.search(letter);
             } else {
-                setActive('');
                 setSearhLetter('');
                 props.searchReset();
             }
@@ -38,9 +21,9 @@ export const AlphabetPanel = (props: any) => {
 
     alphabet.forEach((item: string) => {
         let attr = '';
-        if (active !== '' && active === item) {
+        if (props.active !== '' && props.active === item) {
             attr = 'active';
-        } else if (disabled !== '' && disabled === item) {
+        } else if (props.disabled !== '' && props.disabled === item) {
             attr = 'disabled';
         }
         if (item === 'z') {

@@ -1,6 +1,3 @@
-import { useEffect } from "react";
-import { useState } from "react";
-
 export const PaginationDefaultCongif = {
 	page: 1,
 	limit: 3,
@@ -8,108 +5,126 @@ export const PaginationDefaultCongif = {
 	perPageOptions: [3, 5, 10, 20]
 }
 
-const initialPages: number[] = [];
+export const getPerPagePaginationOptions = (dataLength: number) => {
+	let perPage: number[] = [];
+	let perPageOptions = PaginationDefaultCongif.perPageOptions;
+
+	[...perPageOptions].forEach(x => {
+		fillPerPage(perPage, x, dataLength);
+	})
+
+	if (perPage.length === 0) {
+		perPage.push(3);
+	}
+
+	return perPage;
+}
+
+function fillPerPage (array: number[], limit: number, dataLength: number) {
+	if (limit <= dataLength) {
+		array.push(limit);
+	} else {
+		let res = limit / dataLength;
+		if (res < 2) {
+			array.push(limit);
+		} 
+	}
+}
 
 export const Pagination = (props: any) => {
 	const next = '>';
 	const previous = '<';
 	const IDLE_PAGE = 'of';
 	const PAGE_LIMIT = 3;
-	const [pages, setPages] = useState(initialPages);
-	const [activePage, setActivePage] = useState(props.activePage);
-
 	const options = props.options ?? PaginationDefaultCongif.perPageOptions;
+	const page = props.activePage;
 
-	useEffect(() => {
-		callPaginate();
-	}, [activePage])
+	let pageNums = [];
+	let startIndex = 1;
 
-	useEffect(() => {
-		let pageNums = [];
-		let startIndex = 1;
-
-		if (props.total > PAGE_LIMIT) {
-			if (activePage <= PAGE_LIMIT) {
-				for (let i = startIndex; i < startIndex + PAGE_LIMIT; i++) {  // 1, 2, 3 of 9
+	if (props.totalNumOfPages > 0) {
+		if (props.totalNumOfPages > PAGE_LIMIT) {
+			if (page <= PAGE_LIMIT) {
+				for (let i = startIndex; i < startIndex + PAGE_LIMIT; i++) {
 					pageNums.push(i);
 				}
 			} else {
-				startIndex = activePage + 1 - PAGE_LIMIT;
+				startIndex = page + 1 - PAGE_LIMIT;
 				for (let i = startIndex; i < startIndex + PAGE_LIMIT; i++) {
 					pageNums.push(i);
 				}
 			}
 
 		} else {
-			for (let i = 1; i <= props.total; i++) { // 1, 2, 3
+			for (let i = 1; i <= props.totalNumOfPages; i++) {
 				pageNums.push(i);
 			}
 		}
 
-		setPages(pageNums);
-
-	}, [pages])
+	}
 
 	const handlePreviousPage = (e: any) => {
 		e.preventDefault();
-		const page = activePage - 1;
-		setActivePage(page);
+		const newPage = page - 1;
+		props.paginate(newPage);
 	}
 
 	const handleNextPage = (e: any) => {
 		e.preventDefault();
-		const page = activePage + 1;
-		setActivePage(page);
+		const newPage = page + 1;
+		props.paginate(newPage);
 	}
 
 	const handleChangePage = (e: any) => {
 		e.preventDefault();
-		const page = parseInt(e.target.id);
-		setActivePage(page);
-	}
-
-	const callPaginate = () => {
-		props.paginate(activePage);
-	}
-
-	const changePageLimit = (e: any) => {
-		props.changeLimit(e.target.value);
+		const newPage = parseInt(e.target.id);
+		props.paginate(newPage);
 	}
 
 	return (
 		<div className='pagination'>
-			{props.noResults
+			{props.dataLength === 0
 				? <p>No results</p>
 				: <>
 					<ul>
-						{props.total > PAGE_LIMIT
+						{props.totalNumOfPages > PAGE_LIMIT
 							? <>
-								<li className={activePage === 1 ? 'disabled-page-link' : ''}>
+								<li className={page === 1 ? 'disabled-page-link' : ''}>
 									<a href=' ' onClick={handlePreviousPage}>
 										{previous}
 									</a>
 								</li>
-								{pages.map(number => (
-									<li key={number} className={number === activePage ? 'active-page' : ''}>
-										<a href=' ' onClick={handleChangePage} id={number.toString()}>
-											{number}
+
+								{pageNums.map((pageNum: number) => (
+									<li key={pageNum} className={pageNum === page ? 'active-page' : ''}>
+										<a href=' ' onClick={handleChangePage} id={pageNum.toString()}>
+											{pageNum}
 										</a>
 									</li>
 								))}
+
 								<li key='IDLE' style={{ 'width': '30px' }}>{IDLE_PAGE}</li>
-								<li key={props.total} className={activePage === props.total ? 'disabled-page-link' : ''}>
-									<a href=' ' onClick={handleChangePage} id={props.total.toString()}>{props.total}</a>
+								<li key={props.totalNumOfPages} className={page === props.totalNumOfPages ? 'disabled-page-link' : ''}>
+									<a href=' ' onClick={handleChangePage} id={props.totalNumOfPages.toString()}>{props.totalNumOfPages}</a>
 								</li>
-								<li className={activePage === props.total ? 'disabled-page-link' : ''}>
+								<li className={page === props.totalNumOfPages ? 'disabled-page-link' : ''}>
 									<a href=' ' onClick={handleNextPage}>
 										{next}
 									</a>
 								</li>
 							</>
-							: <></>
+							: <>
+								{pageNums.map((pageNum: number) => (
+									<li key={pageNum} className={pageNum === page ? 'active-page' : ''}>
+										<a href=' ' onClick={handleChangePage} id={pageNum.toString()}>
+											{pageNum}
+										</a>
+									</li>
+								))}
+							</>
 						}
 					</ul>
-					<select className='pagination-select' value={props.perPage} onChange={(e) => changePageLimit(e)}>
+					<select className='pagination-select' value={props.perPage} onChange={(e) => props.changeLimit(e.target.value)}>
 						{options.map((itemPerPage: number) => (
 							<option value={itemPerPage} key={itemPerPage}>{itemPerPage}</option>
 						))}

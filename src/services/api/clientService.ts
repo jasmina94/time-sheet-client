@@ -1,6 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import { tokenHelper } from '../../helpers/tokenHelper'
 import { handleResponse } from '../../helpers/responseHandler';
+import { getReadPath } from '../../helpers/searchPathHelper';
 import { ApiResponse, Client } from '../../model/Model';
 const { REACT_APP_CLIENTS_PATH } = process.env;
 
@@ -37,18 +38,19 @@ function readAll() {
 function read(page: number, perPage: number, term: string = '') {
     let result: ApiResponse;
     const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
-    const path = getReadPath(page, perPage, term);
+    const path = getReadPath('clients', page, perPage, term);
 
     return fetch(path, requestOptions)
         .then(handleResponse)
         .then(response => {
             let clients = response.clients;
             let numOfPages = response.numOfPages;
+            let total = response.total;
 
             localStorage.setItem('clients', JSON.stringify(clients));
             clientsSubject.next(clients);
 
-            result = { success: true, data: { clients, numOfPages }, error: '' };
+            result = { success: true, data: { clients, numOfPages, total }, error: '' };
 
             return result;
         })
@@ -112,8 +114,3 @@ function remove(clientId: number) {
         })
 }
 
-function getReadPath(page: number, limit: number, searchTerm: string) {
-    let path = CLIENTS_PATH + '?page=' + page + '&limit=' + limit;
-    path += searchTerm ? '&term=' + searchTerm.trim() : '';
-    return path;
-}
