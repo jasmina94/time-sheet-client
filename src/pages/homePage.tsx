@@ -20,13 +20,13 @@ export const HomePage = (props: any) => {
   const [userInfo, setUserInfo] = useState(props.userInfo);
   const [token] = useState(authenticationService.tokenValue);
 
-  useEffect(() => {    
+  useEffect(() => {
     if (tokenHelper.isTokenExpired(token)) {
-        authenticationService.logout();
+      authenticationService.logout();
     } else {
-        setUserInfo(tokenHelper.getUserInfo(token));
+      setUserInfo(tokenHelper.getUserInfo(token));
     }
-}, []);
+  }, []);
 
   const logout = (e: any) => {
     e.preventDefault();
@@ -82,8 +82,8 @@ export const HomePage = (props: any) => {
             </li>
           </ul>
           <nav>
-            <Menu activeTab={activeTab} handleTabClick={handleTabClick} menuItems={menuItems}/>
-            <MobileMenu activeTab={activeTab} handleTabClick={handleTabClick} menuItems={menuItems}/>
+            <Menu activeTab={activeTab} handleTabClick={handleTabClick} menuItems={menuItems} />
+            <MobileMenu activeTab={activeTab} handleTabClick={handleTabClick} menuItems={menuItems} />
             <span className='line'></span>
           </nav>
         </div>

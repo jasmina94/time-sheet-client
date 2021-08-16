@@ -43,7 +43,7 @@ function read(page: number, perPage: number, term: string = '') {
     return fetch(path, requestOptions)
         .then(handleResponse)
         .then(response => {
-            let clients = response.clients;
+            let clients = response.data;
             let numOfPages = response.numOfPages;
             let total = response.total;
 
