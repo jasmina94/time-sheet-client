@@ -21,20 +21,20 @@ function searchFor(searchType: string, searchTerm: string) {
             const data = {
                 entities: response.entities,
                 numOfPages: response.numOfPages
-            }            
+            }
 
-            result = { success: true, data: data, error: ''};
-            
+            result = { success: true, data: data, error: '' };
+
             return result;
         })
         .catch(error => {
             result = { success: false, data: {}, error: error };
-            
+
             return result;
         })
 }
 
-function searchByLetter(page:number, perPage: number, searchType: string, letter: string) {
+function searchByLetter(page: number, perPage: number, searchType: string, letter: string) {
     let result: ApiResponse;
     const requestOptions: any = { method: 'GET', headers: tokenHelper.getAuthHeader() };
     const path = getSearchPath(page, perPage, searchType, letter);
@@ -43,18 +43,18 @@ function searchByLetter(page:number, perPage: number, searchType: string, letter
         .then(handleResponse)
         .then(response => {
             const data = {
-                entities: response.entities,
+                entities: response.data,
                 numOfPages: response.numOfPages,
                 total: response.total
-            }            
+            }
 
-            result = { success: true, data: data, error: ''};
-            
+            result = { success: true, data: data, error: '' };
+
             return result;
         })
         .catch(error => {
             result = { success: false, data: {}, error: error };
-            
+
             return result;
         })
 }
